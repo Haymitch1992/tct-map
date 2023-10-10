@@ -2351,11 +2351,29 @@ const count = ref(0);
 <template>
   <div id="container">
     <div class="pos-container">
-      <el-button size="small" type="primary" @click="hideMap"
+      <!-- <el-button  type="primary" @click="hideMap"
         >隐藏热力图</el-button
       >
-      <el-button size="small" type="primary" @click="showMap"
+      <el-button type="primary" @click="showMap"
         >显示热力图</el-button
+      > -->
+      <el-button type="primary" @click="showMap"
+        >降雨分布</el-button
+      >
+      <el-button type="primary" @click="showMap"
+        >空气质量</el-button
+      >
+      <el-button type="primary" @click="showMap"
+        >气温分布</el-button
+      >
+      <el-button type="primary" @click="showMap"
+        >风速分布</el-button
+      >
+      <el-button type="primary" @click="showMap"
+        >应急公共服务分布</el-button
+      >
+      <el-button type="primary" @click="showMap"
+        >综合枢纽站分布</el-button
       >
     </div>
   </div>

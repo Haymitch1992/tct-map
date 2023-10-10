@@ -91,8 +91,12 @@ onMounted(() => {
     <div class="content">
       <div class="item-map">
         <HelloWorld ref="childComponent" />
-        <div class="pos-div" v-if="posDivVisble">
-          <el-descriptions title="北京站车站详情" :column="1" border>
+      </div>
+      <div class="item-control">
+        <!--  -->
+        <div class="item-2">
+          <h2>车站信息</h2>
+          <el-descriptions style="padding: 10px;" title="" :column="1" border>
             <!-- <el-descriptions-item label="周边医院"
               >协和医院</el-descriptions-item
             >
@@ -108,78 +112,18 @@ onMounted(() => {
             <el-descriptions-item label="周边共享单车数量"
               >100个</el-descriptions-item
             >
-            <el-descriptions-item label="当前降雨量"
-              >0mm</el-descriptions-item
-            >
+            <el-descriptions-item label="当前降雨量">0mm</el-descriptions-item>
             <el-descriptions-item label="未来24小时降雨量"
               >20mm</el-descriptions-item
             >
           </el-descriptions>
         </div>
-        <div></div>
-      </div>
-      <div class="item-control">
-        <!--  -->
         <div class="item-1">
           <h2>降雨信息</h2>
           <div>
             <bar-item :obj="pageData.data1"></bar-item>
           </div>
           <!-- 降水量分析图  -->
-        </div>
-        <div class="item-2">
-          <h2>报警信息</h2>
-          <ul class="data-ul">
-            <li>
-              北新桥站3#道会故障
-              <el-button
-                size="small"
-                class="btn"
-                type="primary"
-                @click="dialogVisible = true"
-              >
-                查看详情</el-button
-              >
-            </li>
-            <li>
-              北新桥站4#道会故障
-              <el-button
-                @click="dialogVisible = true"
-                size="small"
-                class="btn"
-                type="primary"
-              >
-                查看详情</el-button
-              >
-            </li>
-          </ul>
-        </div>
-        <div class="item-2">
-          <h2>物资信息</h2>
-          <ul class="data-ul">
-            <li>
-              北新桥物资仓库
-              <el-button
-                size="small"
-                class="btn"
-                type="primary"
-                @click="dialogVisible2 = true"
-              >
-                查看详情</el-button
-              >
-            </li>
-            <li>
-              新首钢物资仓库
-              <el-button
-                @click="dialogVisible2 = true"
-                size="small"
-                class="btn"
-                type="primary"
-              >
-                查看详情</el-button
-              >
-            </li>
-          </ul>
         </div>
       </div>
     </div>
@@ -300,7 +244,8 @@ onMounted(() => {
   margin: 0 10px 20px;
   color: #fff;
   background-color: #09204e;
-  height: 240px;
+  height: 500px;
+  box-sizing: border-box;
 }
 .item-1 h2 {
   padding: 0 0 0 12px;
