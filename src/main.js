@@ -1,14 +1,21 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
+import router from './router'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
+router.beforeEach((to, from, next) => {
 
-
-
-
+  // chrome
+  document.body.scrollTop = 0
+  // firefox
+  document.documentElement.scrollTop = 0
+  // safari
+  window.pageYOffset = 0
+  next()
+});
 
 const app = createApp(App)
 
@@ -18,5 +25,5 @@ app.config.globalProperties.$colorObj = [
   { name: '中', value: '#fc8251' ,icon:'b'},
   { name: '差', value: '#ff6f71',icon:'a'} 
 ]
-app.use(ElementPlus).mount("#app");
+app.use(router).use(ElementPlus).mount("#app");
 
