@@ -38,7 +38,7 @@ const initMap = () => {
         //设置地图容器id
         viewMode: '3D', //是否为3D地图模式
         zoom: 13.3, //初始化地图级别
-        center: [116.403512, 39.934204], //初始化地图中心点位置
+        center: [116.3154, 39.828891], //初始化地图中心点位置
         // mapStyle: 'amap://styles/whitesmoke',
         layers: [new AMap.TileLayer.Satellite()],
         // mapStyle: 'amap://styles/e50de4d7443ce2cc633112de2de760df',

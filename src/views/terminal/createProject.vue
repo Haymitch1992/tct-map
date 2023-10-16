@@ -1,7 +1,9 @@
 <!-- 创建项目 -->
 <template class="page-container">
   <div class="page-top">
-    <span>低空飞行中心管理平台</span>
+    <span>指挥调度工作站</span>
+    <el-button type="primary" >飞行监视界面</el-button>
+    <el-button type="primary">飞行轨迹设置界面</el-button>
   </div>
   <map-container class="map-container"></map-container>
   <div class="right-container">
@@ -30,11 +32,11 @@
           <el-table-column prop="name" label="设备型号" />
         </el-table>
       </el-form-item>
-      <el-form-item label="作业范围"> 
+      <el-form-item label="作业范围">
         <el-table :data="tableData" border style="width: 100%">
           <el-table-column prop="name" label="经度" />
           <el-table-column prop="name" label="纬度" />
-        </el-table>  
+        </el-table>
       </el-form-item>
     </el-form>
     <el-button type="primary">创建项目</el-button>
@@ -60,7 +62,6 @@ const tableData = [
     date: '2016-05-02',
     name: 'Tom',
   },
-
 ];
 </script>
 
