@@ -25,6 +25,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
     import(/* webpackChunkName: "about" */ "../views/terminal/setWayLine.vue"),
   },
+  {
+    path: "/aircraft",
+    name: "aircraft",
+    component: () =>
+    import(/* webpackChunkName: "about" */ "../views/centre/aircraft.vue"),
+  },
 ];
 
 const router = createRouter({

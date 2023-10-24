@@ -3,6 +3,7 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import ElementPlus from 'element-plus'
+import {createPinia } from 'pinia'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
@@ -17,6 +18,7 @@ router.beforeEach((to, from, next) => {
   next()
 });
 
+const pinia = createPinia()
 const app = createApp(App)
 
 app.config.globalProperties.$colorObj = [
@@ -25,5 +27,5 @@ app.config.globalProperties.$colorObj = [
   { name: '中', value: '#fc8251' ,icon:'b'},
   { name: '差', value: '#ff6f71',icon:'a'} 
 ]
-app.use(router).use(ElementPlus).mount("#app");
+app.use(router).use(ElementPlus).use(pinia).mount("#app");
 

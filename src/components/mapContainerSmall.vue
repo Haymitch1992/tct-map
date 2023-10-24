@@ -21,7 +21,7 @@ var dialogVisible2 = ref(false);
 const initMap = () => {
   AMapLoader.load({
     key: '2b22402984a62e37a7cf1854ceec05f1', // 申请好的Web端开发者Key，首次调用 load 时必填
-    version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+    // version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     plugins: [
       'AMap.ControlBar',
       'AMap.ToolBar',
@@ -29,31 +29,19 @@ const initMap = () => {
       'AMap.Polyline',
       'AMap.PolylineEditor',
       'AMap.Icon',
-      'AMap.Buildings',
     ], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
   })
     .then((AMap) => {
-      var buildings = new AMap.Buildings({
-        zooms: [16, 18],
-        zIndex: 10,
-        heightFactor: 2, // 2 倍于默认高度（3D 视图下生效）
-      });
-
       map = new AMap.Map('container', {
         //设置地图容器id
         viewMode: '3D', //是否为3D地图模式
-
-        pitch: 60,
-        showBuildingBlock: false,
         zoom: 15.8, //初始化地图级别
         terrain: true,
         center: [116.316747, 39.827918], //初始化地图中心点位置
         // mapStyle: 'amap://styles/whitesmoke',
-        layers: [new AMap.TileLayer.Satellite(), buildings],
+        layers: [new AMap.TileLayer.Satellite()],
         // mapStyle: 'amap://styles/e50de4d7443ce2cc633112de2de760df',
       });
-
-      // 创建楼快
 
       var controlBar = new AMap.ControlBar({
         position: {
@@ -105,29 +93,28 @@ const drawLine = (lineData) => {
     strokeOpacity: 0.9,
     zIndex: 50,
     showDir: true,
-    height: 190,
     bubble: true,
     dirColor: 'pink',
     strokeColor: '#3366cc', // 线颜色
-    strokeWeight: 10,
+    strokeWeight: 4,
   });
 
-  polyEditor = new AMap.PolylineEditor(map, polyline1);
+  // polyEditor = new AMap.PolylineEditor(map, polyline1);
 
-  polyEditor.setTarget(polyline1);
-  polyEditor.on('adjust', function (event) {
-    let path = event.target.getPath();
-    calcLine(path);
-  });
-  polyEditor.on('addnode', function (event) {
-    let path = event.target.getPath();
-    calcLine(path);
-  });
+  // polyEditor.setTarget(polyline1);
+  // polyEditor.on('adjust', function (event) {
+  //   let path = event.target.getPath();
+  //   calcLine(path);
+  // });
+  // polyEditor.on('addnode', function (event) {
+  //   let path = event.target.getPath();
+  //   calcLine(path);
+  // });
   // polyEditor.open();
   map.add([polyline1]);
 };
 
-// 绘制三维
+let saveAir = null;
 
 const drawAir = () => {
   map.plugin('AMap.Icon', function () {
@@ -145,10 +132,11 @@ const drawAir = () => {
     var airMarker = new AMap.Marker({
       position: new AMap.LngLat(...store.device1Pos),
       icon: airIcon,
-
       offset: new AMap.Pixel(-24, -24),
     });
+    saveAir = airMarker;
     map.add([airMarker]);
+    // map.setFitView([airMarker]);
   });
 };
 
@@ -186,7 +174,10 @@ watch(
 watch(
   () => store.device1Pos,
   (a) => {
-    map.clearMap();
+    if (saveAir) {
+      map.remove(saveAir);
+    }
+
     drawAir();
     drawLine();
   },
@@ -205,8 +196,8 @@ watch(
   color: #888;
 }
 #container {
-  width: calc(100vw - 410px);
-  height: calc(100vh - 64px);
+  width: 1024px;
+  height: 580px;
   position: relative;
 }
 .pos-container {

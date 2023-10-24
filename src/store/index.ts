@@ -31,24 +31,9 @@ export const mainStore = defineStore('main', {
           image:''
         }
       ],
-      lineList: [
-        { label: '1-八通线' },
-        { label: '2号线' },
-        { label: '5号线' },
-        { label: '6号线' },
-        { label: '7号线' },
-        { label: '8号线' },
-        { label: '9号线' },
-        { label: '10号线' },
-        { label: '11号线' },
-        { label: '13号线' },
-        { label: '15号线' },
-        { label: 'S1线' },
-        { label: '昌平线' },
-        { label: '亦庄线' },
-        { label: '房山线' },
-        { label: '首都机场线' },
-      ],
+      device1Pos:[0,0],
+      device1Line: [] ,
+      device2Line:[],
       rule: {
         accident: {
           max: 0.3,

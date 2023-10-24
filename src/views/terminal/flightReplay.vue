@@ -1,76 +1,99 @@
 <!-- 飞行回放 -->
 <!-- 创建项目 -->
-<template class="page-container">
-  <div class="page-top">
-    <span>指挥调度工作站</span>
-  </div>
-  <map-container class="map-container"></map-container>
-  <div class="right-container">
-    <h3>飞行监视</h3>
+<template>
+  <div class="page-container">
+    <page-top></page-top>
+    <map-container class="map-container" ref="FavoriteRef"></map-container>
+    <div class="right-container">
+      <h3>飞行监视</h3>
+      <!-- <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
+    <el-button type="primary" @click="test()">保存航线</el-button> -->
+      <h4>航线信息</h4>
+      <span class="data-text">
+        {{ store.device1Line }}
+      </span>
+      <el-button>注入</el-button>
+      <h4>飞行器实时数据<el-tag type="success">通信延时 1000ms</el-tag></h4>
+      <span class="data-text">
+        <!-- {{ store.device1Pos }} -->
+        {{ pageData.currentData }}
+      </span>
+
+      <h4>飞行器感知画面</h4>
+      <video-box></video-box>
+    </div>
   </div>
 </template>
 
 <script setup>
-import mapContainer from '../../components/mapContainer.vue';
-import { reactive } from 'vue';
+import mapContainer from '../../components/mapContainer2.vue';
+import pageTop from '../../components/page-top.vue';
+import { mainStore } from '../../store/index';
+import videoBox from '../../components/video.vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { getEeditPlanExecute, postFlightInfoGround } from '../../api/index.ts';
 
-const formLabelAlign = reactive({
-  name: 1,
-  region: 2,
-  type: 3,
-});
-
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-  },
-];
-
-
-
-const airList = reactive({
-  device1Posion: [], // 无人机当前经纬度数据 飞行姿态数据
-  // 无人机飞行轨迹 
-  
-
-  device2Posion: [],// 直升机经纬度// 飞机姿态信息
-  // 直升机飞行轨迹
-
-})
-
+const FavoriteRef = ref(null);
+const store = mainStore();
 // 获取数据
-// 渲染数据
 
+const pageData = reactive({
+  currentData: null,
+});
+var num = 0;
+var timer = null;
+const test = () => {
+  num = 0;
+  getEeditPlanExecute({}).then((res) => {
+    console.log(res.data);
+    store.device1Line = JSON.parse(res.data.data.planInfo);
+    // 存在飞行计划 循环请求
+    timer = setInterval(() => {
+      num += 10;
+      postFlightInfoGround({
+        // planId: 7,
+        planId: res.data.data.planId,
+        deviceKey: '破晓',
+      }).then((res2) => {
+        pageData.currentData = res2.data.data;
+        store.device1Pos = [
+          parseFloat(pageData.currentData.longitude),
+          parseFloat(pageData.currentData.latitude),
+        ];
 
-
+        if (res2.data.data.warningType === '1') {
+          ElMessage({
+            message: res2.data.data.warningInfo,
+            type: 'warning',
+          });
+        }
+      });
+    }, 1000);
+  });
+};
+onMounted(() => {
+  test();
+});
+onUnmounted(() => {
+  clearInterval(timer);
+  // store.device1Line = [[0, 0]];
+});
 </script>
 
 <style lang="less" scoped>
 .page-container {
   position: relative;
+  background-color: #101010;
 }
 .map-container {
   width: 100%;
   height: 100vh;
 }
-.page-top {
-  height: 54px;
-  background-color: #232323;
-  margin-bottom: 10px;
-  color: #fff;
-  line-height: 54px;
-  padding: 0 10px;
-  span {
-    font-size: 22px;
-  }
-}
+
 .right-container {
   width: 400px;
+  overflow: hidden;
   height: calc(100vh - 64px);
   position: absolute;
   right: 0;
@@ -78,6 +101,7 @@ const airList = reactive({
   box-sizing: border-box;
   padding: 0 10px;
   background-color: #232323;
+  color: #fff;
   h3 {
     line-height: 32px;
     padding-bottom: 4px;
@@ -87,13 +111,12 @@ const airList = reactive({
     border-bottom: 1px solid #4c4d4f;
   }
 }
+.data-text {
+  background-color: #101010;
+  color: #fff;
+  display: block;
+  font-size: 14px;
+  padding: 10px 6px;
+  line-height: 30px;
+}
 </style>
-
-
-
-
-
-
-
-
-
