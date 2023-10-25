@@ -3,6 +3,7 @@ import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import mapItem3 from './map-item-3.vue';
 import airImg1 from '../assets/直升机.png';
+import send from '../assets/send.png';
 import { mainStore } from '../store/index';
 
 const store = mainStore();
@@ -55,10 +56,11 @@ const initMap = () => {
       });
 
       // 创建楼快
-
       draw3dLine();
       drawSubLine();
       drawReact();
+
+      draw3dPoint2();
     })
     .catch((e) => {
       console.log(e);
@@ -85,6 +87,7 @@ const airList = reactive({
 // 绘制辅助线
 
 const drawSubLine = () => {
+  if (!store.device1Line) return;
   var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
   map.add(object3Dlayer);
 
@@ -116,6 +119,7 @@ const drawSubLine = () => {
 
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
+
   object3Dlayer.add(lines);
   object3Dlayer.add(points3D);
 };
@@ -222,6 +226,7 @@ const drawReact = () => {
 // 绘制三维路线
 
 const draw3dLine = () => {
+  if (!store.device1Line) return;
   map.plugin(['Map3D'], function () {
     var object3Dlayer = new AMap.Object3DLayer();
     var meshLine = new AMap.Object3D.MeshLine({
@@ -284,6 +289,101 @@ const getEllipseHeight = (count, maxHeight, minHeight) => {
   return height;
 };
 
+// 绘制三维点
+const draw3dPoint = () => {
+  var object3Dlayer = new AMap.Object3DLayer({
+    zIndex: 110,
+    opacity: 1,
+  });
+
+  map.add(object3Dlayer);
+
+  function lnglatToG20(lnglat) {
+    lnglat = map.lngLatToGeodeticCoord(lnglat);
+    lnglat.x = AMap.Util.format(lnglat.x, 3);
+    lnglat.y = AMap.Util.format(lnglat.y, 3);
+    return lnglat;
+  }
+
+  var coords = [store.device1Pos];
+
+  // 纹理图片的长宽尺寸要求为：2的N次方个像素。
+  // 因此这里的图片尺寸为 256px * 256px，也可以是1024*256等尺寸。
+  var imgs = [
+    // 'https://a.amap.com/jsapi_demos/static/demo-center/3d_texture_tiananmen_256.png',
+    // 'http://localhost:5173/public/send.png',
+    // '/test/images/2023/10/25/oTrT0Y.png',
+    '/test/images/2023/10/25/oTrWj9.png',
+  ];
+
+  var points3D = new AMap.Object3D.Points();
+  points3D.transparent = true;
+  var geometry = points3D.geometry;
+  for (var i = 0, len = imgs.length; i < len; i++) {
+    var img = imgs[i];
+    // 设置纹理贴图，数组中可以放入图片 url 和 canvas 对象，图片要符合宽高为 2的N次方 * 2的N次方个像素。
+    // 纹理个数最多为8个，如果超出8个需要自行使用 CSS sprites 技术整合图片，并通过 vertexUVs 定位图片位置。
+    console.log(img);
+    points3D.textures.push(img);
+  }
+
+  for (var p = 0; p < coords.length; p += 1) {
+    var center = lnglatToG20(coords[p]);
+
+    geometry.vertices.push(center.x, center.y, -2000);
+    geometry.vertices.push(center.x, center.y, 0);
+    geometry.pointSizes.push(80);
+    geometry.vertexColors.push(p * 0.029, p * 0.015, p * 0.01, 0.5);
+    geometry.pointAreas.push(0, 0, 1, 1);
+    // 每两个元素描述一个顶点的纹理坐标信息，纹理坐标以图片左上角为原点。分别是左上角和右下角。
+    geometry.vertexUVs.push(0, 0, 1, 1);
+    // 每个元素描述一个顶点的纹理索引信息，多纹理时使用，取值范围[0-7]。单纹理或者无纹理时不需要设值。
+    geometry.textureIndices.push(p);
+  }
+
+  object3Dlayer.add(points3D);
+};
+
+let saveLines = null;
+let savepoints3D = null;
+const draw3dPoint2 = () => {
+  if (!store.device1Pos) return;
+  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+  map.add(object3Dlayer);
+
+  var lines = new AMap.Object3D.Line();
+  var lineGeo = lines.geometry;
+  var path = [store.device1Pos];
+  var points3D = new AMap.Object3D.RoundPoints();
+  points3D.transparent = true;
+  var pointsGeo = points3D.geometry;
+  var height = -2000;
+  for (var i = 0; i < path.length; i++) {
+    var center = map.lngLatToGeodeticCoord(path[i]);
+
+    // 连线
+    lineGeo.vertices.push(center.x, center.y, 0);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+    lineGeo.vertices.push(center.x, center.y, height);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, 0); // 尾部小点
+    pointsGeo.pointSizes.push(6);
+    pointsGeo.vertexColors.push(0, 0, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, height); // 空中点
+    pointsGeo.pointSizes.push(10);
+    pointsGeo.vertexColors.push(0, 1, 0, 1);
+    // height -= 1000;
+  }
+
+  points3D.borderColor = [0.4, 0.8, 1, 1];
+  points3D.borderWeight = 1;
+  saveLines = lines;
+  savepoints3D = points3D;
+  object3Dlayer.add(lines);
+  object3Dlayer.add(points3D);
+};
 // 结束编辑
 
 const closeEdit = () => {
@@ -309,7 +409,12 @@ defineExpose({
 watch(
   () => store.device1Line,
   (data) => {
-    initMap();
+    if (store.device1Line) {
+      // map.clearMap();
+      // map.remove(saveLines);
+      // map.remove(savepoints3D);
+      initMap();
+    }
   },
   {
     deep: true,
@@ -318,7 +423,13 @@ watch(
 watch(
   () => store.device1Pos,
   (a) => {
-    map.clearMap();
+    if (store.device1Pos) {
+      // map.clearMap();
+      // map.remove(saveLines);
+      // map.remove(savepoints3D);
+
+      draw3dPoint2();
+    }
   },
   {
     deep: true,

@@ -212,8 +212,8 @@ const getInfo = () => {
 onMounted(() => {
   getInfo();
   // store.device1Pos = [0, 0];
-  // store.polyline1 = [];
-  // store.device1Pos = null;
+
+  store.device1Pos = null;
 });
 // hang
 </script>

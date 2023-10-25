@@ -12,10 +12,10 @@
       <span class="data-text">
         {{ store.device1Line }}
       </span>
-      <el-button>注入</el-button>
+      <el-button @click="test2()">注入</el-button>
       <h4>飞行器实时数据<el-tag type="success">通信延时 1000ms</el-tag></h4>
       <span class="data-text">
-        <!-- {{ store.device1Pos }} -->
+        {{ store.device1Pos }}
         {{ pageData.currentData }}
       </span>
 
@@ -38,6 +38,11 @@ const FavoriteRef = ref(null);
 const store = mainStore();
 // 获取数据
 
+const test2 = () => {
+  var num1 = store.device1Pos[0] - 0.0001;
+  var num2 = store.device1Pos[1] - 0.0001;
+  store.device1Pos = [num1.toFixed(10), num2.toFixed(10)];
+};
 const pageData = reactive({
   currentData: null,
 });

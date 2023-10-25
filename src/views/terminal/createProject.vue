@@ -44,12 +44,18 @@
 <script setup>
 import mapContainer from '../../components/mapContainer2.vue';
 import pageTop from '../../components/page-top.vue';
-import { reactive } from 'vue';
-
+import { mainStore } from '../../store/index';
+import { reactive, onMounted } from 'vue';
+const store = mainStore();
 const formLabelAlign = reactive({
   name: 1,
   region: 2,
   type: 3,
+});
+
+onMounted(() => {
+  store.device1Pos = null;
+  store.device1Line = null;
 });
 
 const tableData = [

@@ -31,8 +31,9 @@ export const mainStore = defineStore('main', {
           image:''
         }
       ],
-      device1Pos:[0,0],
-      device1Line: [] ,
+      // device1Pos:[116.326755,39.788338],
+      device1Pos:null,
+      device1Line: [[116.326755,39.788338],[116.33287,39.798175]] ,
       device2Line:[],
       rule: {
         accident: {

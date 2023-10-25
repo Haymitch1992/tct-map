@@ -10,6 +10,11 @@ export default defineConfig({
         target: 'http://172.51.216.130:8091',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
+      },
+      '/test': {
+        target: 'https://vip.helloimg.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/test/, '')
       }
     }
   }
