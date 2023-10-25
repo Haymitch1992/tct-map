@@ -2,7 +2,7 @@
 <script setup lang="ts">
 // 是否可以采用原生矩阵 总宽度固定
 
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, Ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 const panel: any = ref(null);
 
@@ -64,7 +64,6 @@ const initEcharts = () => {
             //   y: '60%',
             //   value: '小雨',
             //   symbol: 'text',
-
             //   itemStyle: {
             //     color: 'transparent',
             //   },
@@ -74,7 +73,6 @@ const initEcharts = () => {
             //   y: '60%',
             //   value: '大雨',
             //   symbol: 'text',
-
             //   itemStyle: {
             //     color: 'transparent',
             //   },
