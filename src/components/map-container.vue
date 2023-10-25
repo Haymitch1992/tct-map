@@ -9,6 +9,7 @@ import iconimg3 from '../assets/icon3.png';
 window._AMapSecurityConfig = {
   securityJsCode: '7e5bc09f4481b57e427367314025db90',
 };
+// 降雨热力图数据
 var heatmapData = [
   {
     lng: 116.191031,
@@ -2224,13 +2225,7 @@ const initMap = () => {
       });
       circle.on('click', showDialog);
       map.add(circle);
-
       map.setFitView([circle]);
-      // var visual = new AMap.Visual(
-      //   'amap://visual/e44ab67fe5776395537675db6cd1fb42',
-      //   map
-      // );
-
       map.plugin('AMap.HeatMap', function () {
         //异步加载插件
         heatmap = new AMap.HeatMap(map, {
@@ -2251,7 +2246,7 @@ const initMap = () => {
         });
       });
 
-      let list = [
+      let list = [ // 共享单车仿造数据
         [116.429028, 39.905042],
         [116.429328, 39.905144],
         [116.429428, 39.905344],
@@ -2318,10 +2313,7 @@ const initMap = () => {
           position: new AMap.LngLat(116.429481, 39.904319),
           icon: icon2,
         });
-        // var icon3dMarker = new AMap.Marker({
-        //   position: new AMap.LngLat(116.423281, 39.909919),
-        //   icon: icon3,
-        // });
+    
         map.add([icon2dMarker]);
 
         //异步加载插件
@@ -2351,12 +2343,12 @@ const count = ref(0);
 <template>
   <div id="container">
     <div class="pos-container">
-      <!-- <el-button  type="primary" @click="hideMap"
+      <el-button  type="primary" @click="hideMap"
         >隐藏热力图</el-button
       >
       <el-button type="primary" @click="showMap"
         >显示热力图</el-button
-      > -->
+      >
       <el-button type="primary" @click="showMap"
         >降雨分布</el-button
       >

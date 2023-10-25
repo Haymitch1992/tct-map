@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, shallowRef } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import mapContainer from './components/map-container.vue';
 import mapItem2 from './components/map-item-2.vue';
 import { ElMessageBox } from 'element-plus';
 import barItem from './components/barItem.vue';
 import * as _ from 'lodash';
 const dialogVisible = ref(false);
+
 const handleClose = () => {
   dialogVisible.value = false;
 };
@@ -90,19 +91,13 @@ onMounted(() => {
     <div class="item-title">城市轨道交通线网综合信息监视</div>
     <div class="content">
       <div class="item-map">
-        <HelloWorld ref="childComponent" />
+        <map-container ref="childComponent" />
       </div>
       <div class="item-control">
         <!--  -->
         <div class="item-2">
           <h2>车站信息</h2>
-          <el-descriptions style="padding: 10px;" title="" :column="1" border>
-            <!-- <el-descriptions-item label="周边医院"
-              >协和医院</el-descriptions-item
-            >
-            <el-descriptions-item label="周边消防"
-              >天坛消防支队</el-descriptions-item
-            > -->
+          <el-descriptions style="padding: 10px" title="" :column="1" border>
             <el-descriptions-item label="周边公安"
               >北京站派出所</el-descriptions-item
             >
