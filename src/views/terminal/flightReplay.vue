@@ -39,8 +39,8 @@ const store = mainStore();
 // 获取数据
 
 const test2 = () => {
-  var num1 = store.device1Pos[0] - 0.0001;
-  var num2 = store.device1Pos[1] - 0.0001;
+  var num1 = parseFloat(store.device1Pos[0]) + 0.0001;
+  var num2 = store.device1Pos[1] - 0;
   store.device1Pos = [num1.toFixed(10), num2.toFixed(10)];
 };
 const pageData = reactive({
@@ -62,10 +62,11 @@ const test = () => {
         deviceKey: '破晓',
       }).then((res2) => {
         pageData.currentData = res2.data.data;
-        store.device1Pos = [
-          parseFloat(pageData.currentData.longitude),
-          parseFloat(pageData.currentData.latitude),
-        ];
+
+        // store.device1Pos = [
+        //   parseFloat(pageData.currentData.longitude),
+        //   parseFloat(pageData.currentData.latitude),
+        // ];
 
         if (res2.data.data.warningType === '1') {
           ElMessage({
@@ -78,7 +79,8 @@ const test = () => {
   });
 };
 onMounted(() => {
-  test();
+  // test();
+  store.device1Pos = [116.316062, 39.828417];
 });
 onUnmounted(() => {
   clearInterval(timer);

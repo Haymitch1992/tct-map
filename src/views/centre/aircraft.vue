@@ -44,7 +44,6 @@ onMounted(() => {
 });
 onUnmounted(() => {
   clearInterval(timer);
-  // store.device1Line = [[0, 0]];
 });
 
 // 加载飞行轨迹 飞机位置
@@ -56,9 +55,18 @@ onUnmounted(() => {
 <template>
   <div class="page-container">
     <div class="top-container">
-      <div class="air-status">
-        飞行状态正常 <el-tag size="small" type="success">通信延时100ms</el-tag>
-      </div>
+      <el-tag size="small" type="success" v-if="store.device1Pos"
+        >经度{{ store.device1Pos[0] }}°</el-tag
+      >
+      <el-tag size="small" type="success" v-if="store.device1Pos"
+        >纬度{{ store.device1Pos[1] }}°</el-tag
+      >
+      <el-tag size="small" type="success">高度 500m</el-tag>
+      <el-tag size="small" type="success">飞行姿态 XXX</el-tag>
+      <el-tag size="small" type="success">通信延时100ms</el-tag>
+      <!-- <div class="air-status">
+        
+      </div> -->
     </div>
     <div class="aircraft-container">
       <map-container class="map-container" ref="FavoriteRef"></map-container>
@@ -96,6 +104,9 @@ onUnmounted(() => {
   padding: 0 10px;
   box-sizing: border-box;
   text-align: right;
+  span {
+    margin: 0 4px;
+  }
 }
 .air-status {
   height: 26px;
