@@ -52,7 +52,7 @@ export async function postEeditPlanExecute(loginForm:any) {
 // 获取飞行计划
 
 export async function getEeditPlanExecute() { 
-  return request('/api/planExecute/selectPlanInfo?deviceKey=破晓', METHOD.GET,
+  return request('/api/planExecute/selectPlanInfo?deviceKey=长空之王', METHOD.GET,
     )
 }
 

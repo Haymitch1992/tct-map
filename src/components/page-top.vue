@@ -4,8 +4,11 @@
     <router-link to="/">
       <el-button type="primary" class="btn">创建项目</el-button>
     </router-link>
+    <router-link to="/editLine">
+      <el-button type="primary" class="btn">编辑航线</el-button>
+    </router-link>
     <router-link to="/setWayLine">
-      <el-button type="primary" class="btn">航线设置</el-button>
+      <el-button type="primary" class="btn">选择航线</el-button>
     </router-link>
     <router-link to="/flightReplay">
       <el-button type="primary" class="btn">飞行监视</el-button>

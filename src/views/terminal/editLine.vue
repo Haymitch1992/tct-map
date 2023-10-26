@@ -1,3 +1,4 @@
+<!-- 2d编辑航线 -->
 <!-- 飞行回放 -->
 <!-- 创建项目 -->
 <template>
@@ -5,24 +6,7 @@
     <page-top></page-top>
     <map-container class="map-container" ref="FavoriteRef"></map-container>
     <div class="right-container">
-      <h3>航线设置</h3>
-      <h4>飞行计划列表</h4>
-      <el-table :data="pageData.planList" border style="width: 100%">
-        <el-table-column prop="deviceKey" label="飞行器" width="100" />
-        <el-table-column prop="planId" label="航线ID" width="100" />
-        <el-table-column fixed="right" label="操作">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="warning"
-              v-if="scope.row.planStatus === 0"
-              @click="editflightinfo(scope.row.planId)"
-              >取消</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-
+      <h3>航线编辑</h3>
       <h4>航线列表</h4>
       <!-- {{ pageData.lineList }} -->
       <el-table :data="pageData.lineList" border style="width: 100%">
@@ -41,43 +25,28 @@
               size="small"
               >删除</el-button
             >
-            <el-button
-              size="small"
-              type="warning"
-              @click="addflightinfo(scope.row.planId)"
-              >下达</el-button
-            >
-            <!-- 
-            <el-button
-              size="small"
-              type="warning"
-              @click="editflightinfo(scope.row.planId)"
-              >取消</el-button
-            > -->
           </template>
         </el-table-column>
       </el-table>
 
-      <!-- <h4>航线名称</h4>
+      <h4>航线名称</h4>
       <el-input v-model="pageData.planName"></el-input>
 
-      <h4>航线数据：</h4>
+      <!-- <h4>航线数据：</h4>
       <span class="data-text">
         {{ store.device1Line }}
-      </span>
+      </span> -->
 
       <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
-      <el-button type="primary" @click="test()">保存航线</el-button> -->
-      <!-- <el-button type="primary" @click="test()">任务下达</el-button> -->
-
+      <el-button type="primary" @click="test()">保存航线</el-button>
       <!-- <el-button type="primary" @click="addLine()">创建航线</el-button> -->
-      <!-- <el-button type="primary" @click="editLine()">更新航线</el-button> -->
+      <el-button type="primary" @click="editLine()">更新航线</el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import mapContainer from '../../components/mapContainer2.vue';
+import mapContainer from '../../components/mapContainer.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import videoBox from '../../components/video.vue';
@@ -115,6 +84,7 @@ const handleClick = (item) => {
   pageData.planName = item.planName;
   store.device1Line = JSON.parse(item.planInfo);
   pageData.planId = item.planId;
+  FavoriteRef.value.initMapFn();
 };
 
 // 创建航线

@@ -5,7 +5,7 @@ import videoBox from '../../components/videoSmall.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
-
+import { wgs84togcj02 } from '../../vendors/coordtransform.js';
 import { getEeditPlanExecute, postFlightInfo } from '../../api/index.ts';
 
 const FavoriteRef = ref(null);
@@ -28,13 +28,14 @@ const test = () => {
       postFlightInfo({
         // planId: 7,
         planId: res.data.data.planId,
-        deviceKey: '破晓',
+        deviceKey: '长空之王',
       }).then((res2) => {
         pageData.currentData = res2.data.data;
-        store.device1Pos = [
+
+        store.device1Pos = wgs84togcj02(
           parseFloat(pageData.currentData.longitude),
-          parseFloat(pageData.currentData.latitude),
-        ];
+          parseFloat(pageData.currentData.latitude)
+        );
       });
     }, 100);
   });

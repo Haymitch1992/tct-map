@@ -34,7 +34,8 @@ export const mainStore = defineStore('main', {
       // device1Pos:[116.326755,39.788338],
       device1Pos:null,
       device1Line: [[116.326755,39.788338],[116.33287,39.798175]] ,
-      device2Line:[],
+      device2Line: [],
+      altitude:null,
       rule: {
         accident: {
           max: 0.3,

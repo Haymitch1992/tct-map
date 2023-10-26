@@ -54,7 +54,16 @@ const initMap = () => {
         layers: [new AMap.TileLayer.Satellite(), buildings],
         // mapStyle: 'amap://styles/e50de4d7443ce2cc633112de2de760df',
       });
-
+      map.addControl(
+        new AMap.ControlBar({
+          showZoomBar: false,
+          showControlButton: true,
+          position: {
+            right: '10px',
+            top: '10px',
+          },
+        })
+      );
       // 创建楼快
       draw3dLine();
       drawSubLine();
@@ -424,10 +433,9 @@ watch(
   () => store.device1Pos,
   (a) => {
     if (store.device1Pos) {
-      // map.clearMap();
       // map.remove(saveLines);
       // map.remove(savepoints3D);
-
+      // console.log(123)
       draw3dPoint2();
     }
   },
