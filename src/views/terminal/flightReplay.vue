@@ -20,7 +20,7 @@
       <el-tag size="small" type="success" v-if="store.device1Pos"
         >纬度 {{ store.device1Pos[1] }}°</el-tag
       >
-      <el-tag size="small" type="success">高度 {{ store.altitude }}m</el-tag>
+      <el-tag size="small" type="success">海拔 {{ store.altitude }}m</el-tag>
       <!-- <span class="data-text">
         {{ store.device1Pos }}
         {{ pageData.currentData }}
@@ -85,7 +85,7 @@ const test = () => {
         //   parseFloat(pageData.currentData.latitude),
         // ];
 
-        if (res2.data.data.warningType === '1001') {
+        if (res2.data.data.warningType === '10001') {
           ElMessage({
             message: res2.data.data.warningInfo,
             type: 'warning',

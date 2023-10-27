@@ -7,6 +7,7 @@ import { mainStore } from '../../store/index';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { wgs84togcj02 } from '../../vendors/coordtransform.js';
 import { getEeditPlanExecute, postFlightInfo } from '../../api/index.ts';
+import { ElMessage } from 'element-plus';
 
 const FavoriteRef = ref(null);
 const store = mainStore();
@@ -17,11 +18,13 @@ const pageData = reactive({
 });
 var num = 0;
 var timer = null;
+var timer2 = null;
 const test = () => {
   num = 0;
   getEeditPlanExecute({}).then((res) => {
     console.log(res.data);
     store.device1Line = JSON.parse(res.data.data.planInfo);
+
     // 存在飞行计划 循环请求
     timer = setInterval(() => {
       num++;
@@ -30,18 +33,39 @@ const test = () => {
         planId: res.data.data.planId,
         deviceKey: '长空之王',
       }).then((res2) => {
+        if (!res2.data) {
+          clearInterval(timer);
+          timer2 = setInterval(() => {
+            test();
+          }, 1000);
+          return;
+        }
+        //
         pageData.currentData = res2.data.data;
-
         store.device1Pos = wgs84togcj02(
           parseFloat(pageData.currentData.longitude),
           parseFloat(pageData.currentData.latitude)
         );
+        store.altitude = pageData.currentData.altitude;
+        if (res2.data.data.warningType === '10001') {
+          ElMessage({
+            message: res2.data.data.warningInfo,
+            type: 'warning',
+          });
+        }
+
       });
-    }, 100);
+    }, 1000);
+    if (res.data) {
+      clearInterval(timer2);
+      return;
+    }
   });
 };
 onMounted(() => {
-  test();
+  timer2 = setInterval(() => {
+    test();
+  }, 1000);
 });
 onUnmounted(() => {
   clearInterval(timer);
@@ -62,8 +86,8 @@ onUnmounted(() => {
       <el-tag size="small" type="success" v-if="store.device1Pos"
         >纬度{{ store.device1Pos[1] }}°</el-tag
       >
-      <el-tag size="small" type="success">高度 500m</el-tag>
-      <el-tag size="small" type="success">飞行姿态 XXX</el-tag>
+      <el-tag size="small" type="success">海拔 {{store.altitude}}m</el-tag>
+      <!-- <el-tag size="small" type="success">飞行姿态 XXX</el-tag> -->
       <el-tag size="small" type="success">通信延时100ms</el-tag>
       <!-- <div class="air-status">
         

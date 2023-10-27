@@ -13,9 +13,9 @@
     <router-link to="/flightReplay">
       <el-button type="primary" class="btn">飞行监视</el-button>
     </router-link>
-    <router-link to="/aircraft">
+    <!-- <router-link to="/aircraft">
       <el-button type="primary" class="btn">机载终端</el-button>
-    </router-link>
+    </router-link> -->
   </div>
 </template>
 
@@ -35,4 +35,3 @@
   margin: 0 10px;
 }
 </style>
-
