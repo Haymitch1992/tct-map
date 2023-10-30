@@ -3,7 +3,6 @@ import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import mapItem3 from './map-item-3.vue';
 import airImg1 from '../assets/直升机.png';
-import send from '../assets/send.png';
 import { mainStore } from '../store/index';
 
 const store = mainStore();
