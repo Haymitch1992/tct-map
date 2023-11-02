@@ -36,6 +36,7 @@ const initMap = () => {
     .then((AMap) => {
       var buildings = new AMap.Buildings({
         zooms: [16, 18],
+
         zIndex: 10,
         heightFactor: 2, // 2 倍于默认高度（3D 视图下生效）
       });
@@ -43,14 +44,20 @@ const initMap = () => {
       map = new AMap.Map('container', {
         //设置地图容器id
         viewMode: '3D', //是否为3D地图模式
-
         pitch: 60,
         showBuildingBlock: false,
         zoom: 15.8, //初始化地图级别
         terrain: true,
         center: [116.316747, 39.827918], //初始化地图中心点位置
         // mapStyle: 'amap://styles/whitesmoke',
-        layers: [new AMap.TileLayer.Satellite(), buildings],
+        layers: [
+          new AMap.TileLayer.Satellite(),
+          buildings,
+          new AMap.TileLayer.RoadNet({
+            opacity: 0.5,
+            features: ['buildings'],
+          }),
+        ],
         // mapStyle: 'amap://styles/e50de4d7443ce2cc633112de2de760df',
       });
       map.addControl(

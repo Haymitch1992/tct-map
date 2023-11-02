@@ -21,14 +21,13 @@ var dialogVisible2 = ref(false);
 const initMap = () => {
   AMapLoader.load({
     key: '2b22402984a62e37a7cf1854ceec05f1', // 申请好的Web端开发者Key，首次调用 load 时必填
-    // version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+    version: '2.0', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     plugins: [
       'AMap.ControlBar',
       'AMap.ToolBar',
       'AMap.KmlLayer',
       'AMap.Polyline',
-      // 'AMap.PolylineEditor',
-      'AMap.PolyEditor',
+      'AMap.PolylineEditor',
       'AMap.Icon',
       'AMap.Buildings',
     ], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
@@ -56,7 +55,23 @@ const initMap = () => {
 
       // 创建楼快
 
-      // drawAir();
+      var controlBar = new AMap.ControlBar({
+        position: {
+          left: '10px',
+          top: '10px',
+        },
+      });
+      controlBar.addTo(map);
+
+      var toolBar = new AMap.ToolBar({
+        position: {
+          left: '40px',
+          top: '110px',
+        },
+      });
+      toolBar.addTo(map);
+
+      drawAir();
       drawLine();
       // var polyEditor = new AMap.PolyEditor(map, polygon)
       // polyEditor = new AMap.PolygonEditor(map)
@@ -97,9 +112,9 @@ const drawLine = (lineData) => {
     strokeWeight: 10,
   });
 
-  polyEditor = new AMap.PolyEditor(map, polyline1);
-  map.setFitView([polyline1]);
-  // polyEditor.setTarget(polyline1);
+  polyEditor = new AMap.PolylineEditor(map, polyline1);
+
+  polyEditor.setTarget(polyline1);
   polyEditor.on('adjust', function (event) {
     let path = event.target.getPath();
     calcLine(path);
@@ -151,39 +166,34 @@ const startEdit = () => {
 onMounted(() => {
   initMap();
 });
-
-const initMapFn = () => {
-  initMap();
-};
 const count = ref(0);
 
 // 暴露出方法
 defineExpose({
   closeEdit,
   startEdit,
-  initMapFn,
 });
 
 watch(
   () => store.device1Line,
   (data) => {
-    // initMap();
+    initMap();
   },
   {
     deep: true,
   }
 );
-// watch(
-//   () => store.device1Pos,
-//   (a) => {
-//     map.clearMap();
-//     drawAir();
-//     drawLine();
-//   },
-//   {
-//     deep: true,
-//   }
-// );
+watch(
+  () => store.device1Pos,
+  (a) => {
+    map.clearMap();
+    drawAir();
+    drawLine();
+  },
+  {
+    deep: true,
+  }
+);
 </script>
 
 <template>

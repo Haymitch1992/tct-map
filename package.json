@@ -11,6 +11,7 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "axios": "^1.5.1",
+    "dplayer": "^1.27.1",
     "echarts": "^5.4.3",
     "element-plus": "^2.3.12",
     "flv.js": "^1.6.2",

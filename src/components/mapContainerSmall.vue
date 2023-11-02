@@ -18,6 +18,7 @@ const showBtn = ref(true);
 var map = shallowRef(null);
 var heatmap = '';
 var dialogVisible2 = ref(false);
+var marker = null;
 const initMap = () => {
   AMapLoader.load({
     key: '2b22402984a62e37a7cf1854ceec05f1', // 申请好的Web端开发者Key，首次调用 load 时必填
@@ -29,6 +30,7 @@ const initMap = () => {
       'AMap.Polyline',
       'AMap.PolylineEditor',
       'AMap.Icon',
+      'AMap.Marker',
     ], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
   })
     .then((AMap) => {
@@ -116,6 +118,20 @@ const drawLine = (lineData) => {
 
 let saveAir = null;
 
+const drawAirAutoRotation = () => {
+  marker = new AMap.Marker({
+    map: map,
+    position: [116.478935, 39.997761],
+    icon: 'https://webapi.amap.com/images/car.png',
+    offset: new AMap.Pixel(-26, -13),
+    autoRotation: true,
+    animateEnable: true,
+    angle: -90,
+  });
+  marker.moveAlong(store.device1Line, 200);
+};
+
+
 const drawAir = () => {
   map.plugin('AMap.Icon', function () {
     var airIcon = new AMap.Icon({
@@ -123,6 +139,7 @@ const drawAir = () => {
       size: new AMap.Size(48, 48),
       // 图标的取图地址
       image: airImg1,
+
       anchor: 'center',
       // 图标所用图片大小
       imageSize: new AMap.Size(48, 48),
@@ -136,7 +153,7 @@ const drawAir = () => {
     });
     saveAir = airMarker;
     map.add([airMarker]);
-    // map.setFitView([airMarker]);
+    map.setFitView([airMarker]);
   });
 };
 
@@ -151,6 +168,11 @@ const startEdit = () => {
   polyEditor.open();
   console.log('结束编辑');
 };
+
+const changeRotation = (num) => {
+  map.setRotation(num);
+};
+
 onMounted(() => {
   initMap();
 });
@@ -160,6 +182,8 @@ const count = ref(0);
 defineExpose({
   closeEdit,
   startEdit,
+  drawAirAutoRotation,
+  changeRotation,
 });
 
 watch(

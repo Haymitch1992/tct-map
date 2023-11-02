@@ -2,12 +2,15 @@
 <script setup>
 import mapContainer from '../../components/mapContainerSmall.vue';
 import videoBox from '../../components/videoSmall.vue';
+// import videoBox from '../../components/video-item.vue';
+
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { wgs84togcj02 } from '../../vendors/coordtransform.js';
 import { getEeditPlanExecute, postFlightInfo } from '../../api/index.ts';
 import { ElMessage } from 'element-plus';
+import compass from '../../components/compass.vue';
 
 const FavoriteRef = ref(null);
 const store = mainStore();
@@ -15,6 +18,11 @@ const store = mainStore();
 
 const pageData = reactive({
   currentData: null,
+  flightTrack: {
+    pitchAngle: null, //  滚转 pithch
+    rollAngle: null, //  俯仰 roll
+    headingAngle: 10, //  偏转 yaw
+  },
 });
 var num = 0;
 var timer = null;
@@ -47,13 +55,16 @@ const test = () => {
           parseFloat(pageData.currentData.latitude)
         );
         store.altitude = pageData.currentData.altitude;
-        if (res2.data.data.warningType === '10001') {
-          ElMessage({
-            message: res2.data.data.warningInfo,
-            type: 'warning',
-          });
-        }
+        let obj = JSON.parse(pageData.currentData.flightTrack);
 
+        pageData.flightTrack = obj;
+        // testRotation();
+        // if (res2.data.data.warningType === '10001') {
+        //   ElMessage({
+        //     message: res2.data.data.warningInfo,
+        //     type: 'warning',
+        //   });
+        // }
       });
     }, 1000);
     if (res.data) {
@@ -71,6 +82,25 @@ onUnmounted(() => {
   clearInterval(timer);
 });
 
+const drawAir = () => {
+  // drawAirAutoRotation
+  FavoriteRef.value.drawAirAutoRotation();
+};
+
+var num = 0;
+const testRotation = () => {
+  num += 1;
+  FavoriteRef.value.changeRotation(num);
+};
+const obj = {
+  autoplay: true,
+  controls: true,
+  sources: [
+    {
+      src: 'rtsp://admin:tct123456@172.48.0.252:554/1',
+    },
+  ],
+};
 // 加载飞行轨迹 飞机位置
 // 告警提示音
 //
@@ -86,17 +116,29 @@ onUnmounted(() => {
       <el-tag size="small" type="success" v-if="store.device1Pos"
         >纬度{{ store.device1Pos[1] }}°</el-tag
       >
-      <el-tag size="small" type="success">海拔 {{store.altitude}}m</el-tag>
+      <el-tag size="small" type="success">海拔 {{ store.altitude }}m</el-tag>
       <!-- <el-tag size="small" type="success">飞行姿态 XXX</el-tag> -->
       <el-tag size="small" type="success">通信延时100ms</el-tag>
       <!-- <div class="air-status">
-        
+      
       </div> -->
+      <el-tag size="small" type="success"
+        >滚转 {{ pageData.flightTrack.pitchAngle }}</el-tag
+      >
+      <el-tag size="small" type="success">
+        俯仰{{ pageData.flightTrack.rollAngle }}</el-tag
+      >
+      <el-tag size="small" type="success"
+        >偏转 {{ pageData.flightTrack.headingAngle }}</el-tag
+      >
+      <!-- <el-button @click="drawAir"> 测试</el-button> -->
+      <el-button @click="testRotation">测试选装</el-button>
     </div>
     <div class="aircraft-container">
       <map-container class="map-container" ref="FavoriteRef"></map-container>
+      <compass></compass>
       <div class="video-container">
-        <video-box></video-box>
+        <video-box :options="obj"></video-box>
       </div>
     </div>
   </div>
