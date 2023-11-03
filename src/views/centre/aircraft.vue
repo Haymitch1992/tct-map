@@ -29,7 +29,9 @@ var timer = null;
 var timer2 = null;
 const test = () => {
   num = 0;
-  getEeditPlanExecute({}).then((res) => {
+  getEeditPlanExecute({
+    deviceKey: '无人机',
+  }).then((res) => {
     console.log(res.data);
     store.device1Line = JSON.parse(res.data.data.planInfo);
 

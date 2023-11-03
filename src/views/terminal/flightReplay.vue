@@ -58,7 +58,9 @@ var num = 0;
 var timer = null;
 const test = () => {
   num = 0;
-  getEeditPlanExecute({}).then((res) => {
+  getEeditPlanExecute({
+    deviceKey: '有人机',
+  }).then((res) => {
     console.log(res.data);
     store.device1Line = JSON.parse(res.data.data.planInfo);
     // 存在飞行计划 循环请求

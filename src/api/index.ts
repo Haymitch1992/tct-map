@@ -51,11 +51,14 @@ export async function postEeditPlanExecute(loginForm:any) {
 
 // 获取飞行计划
 
-export async function getEeditPlanExecute() { 
-  return request('/api/planExecute/selectPlanInfo?deviceKey=长空之王', METHOD.GET,
-    )
+// export async function getEeditPlanExecute() { 
+//   return request('/api/planExecute/selectPlanInfo?deviceKey=长空之王', METHOD.GET,
+//     )
+// }
+export async function getEeditPlanExecute(loginForm:any) { 
+  return request(`/api/planExecute/selectPlanInfo`, METHOD.GET,
+    loginForm)
 }
-
 
 export async function postFlightInfoGround(loginForm:any) { 
   return request('/api/emuairPlane/flightInfoGround', METHOD.POST,

@@ -3,10 +3,12 @@
     <div class="compass-container">
       <div class="compass"></div>
       <div class="arrow"></div>
-      <div>
-        <span class="height-text">100 M</span>
-        <span class="height-unit">ALT</span>
-        <span class="height-unit">M</span>
+      <div class="main-text">
+        <span class="height-text">{{ store.altitude }}</span>
+        <span class="height-unit">
+          <div class="height-unit">ALT</div>
+          <div class="height-unit">M</div>
+        </span>
       </div>
 
       <div class="obstacle-info" data-v-242b641f="" data-v-28afdb6c="">
@@ -27,13 +29,18 @@
           style="top: 100%"
         ></span>
         <div class="marker zero-marker" data-v-242b641f=""></div>
-        <span class="agl-number map-text-shadow" data-v-242b641f="">51.6</span>
+        <span class="agl-number map-text-shadow" data-v-242b641f="">{{
+          store.altitude
+        }}</span>
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { mainStore } from '../store/index';
+const store = mainStore();
+</script>
 
 <style lang="less" scoped>
 .container {
@@ -77,14 +84,36 @@
   top: 60px; // 75-32
   left: 60px;
 }
-.height-text {
+.main-text {
   color: #00ee8b;
+  position: absolute;
+  right: -100px;
+  top: 14px;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.5),
+    1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5),
+    1px 1px 0 rgba(0, 0, 0, 0.5);
+  span {
+    display: inline-block;
+  }
+  .height-text {
+    font-size: 26px;
+  }
+  .height-unit {
+    font-size: 10px;
+    line-height: 13px;
+    text-align: right;
+    margin-left: 4px;
+    div {
+      padding: 0;
+      margin: 0;
+    }
+  }
 }
 .obstacle-info {
   padding-left: 5px;
   position: absolute;
-  top: 0;
-  right: -40px;
+  bottom: 20px;
+  right: -20px;
   .obstacle-bar {
     width: 7px;
     height: 80px;
@@ -142,6 +171,9 @@
     font-size: 12px;
     line-height: 20px;
     font-weight: 600;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.5), -1px -1px 0 rgba(0, 0, 0, 0.5),
+      1px -1px 0 rgba(0, 0, 0, 0.5), -1px 1px 0 rgba(0, 0, 0, 0.5),
+      1px 1px 0 rgba(0, 0, 0, 0.5);
   }
   .agl-number::after {
     content: 'm';
