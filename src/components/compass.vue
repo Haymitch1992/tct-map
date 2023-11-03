@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="compass-container">
-      <div class="compass"></div>
+      <div class="compass" style="transform: rotate(56.107deg)"></div>
       <div class="arrow"></div>
       <div class="main-text">
         <span class="height-text">{{ store.altitude }}</span>
