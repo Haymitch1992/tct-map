@@ -4,13 +4,23 @@
 <template>
   <div class="page-container">
     <page-top></page-top>
-    <map-container class="map-container" ref="FavoriteRef"></map-container>
+    <map-container
+      :showAir="false"
+      :showLine2="false"
+      class="map-container"
+      ref="FavoriteRef"
+    ></map-container>
     <div class="right-container">
       <h3>航线编辑</h3>
       <h4>航线列表</h4>
+
+      <el-button type="primary" @click="createLine()" class="create-btn"
+        >创建航线</el-button
+      >
       <!-- {{ pageData.lineList }} -->
       <el-table :data="pageData.lineList" border style="width: 100%">
         <el-table-column prop="planName" label="航线名称" width="150" />
+        <el-table-column prop="planId" label="航线名称" width="50" />
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button
@@ -30,17 +40,21 @@
       </el-table>
 
       <h4>航线名称</h4>
-      <el-input v-model="pageData.planName"></el-input>
+      <el-input v-model="pageData.planName" class="planName-line"></el-input>
 
-      <!-- <h4>航线数据：</h4>
+      <h4>航线数据：</h4>
       <span class="data-text">
         {{ store.device1Line }}
-      </span> -->
+      </span>
+      <el-button type="primary" @click="startSetLine()">编辑</el-button>
+      <el-button type="primary" @click="test()">结束编辑</el-button>
 
-      <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
-      <el-button type="primary" @click="test()">保存航线</el-button>
-      <!-- <el-button type="primary" @click="addLine()">创建航线</el-button> -->
-      <el-button type="primary" @click="editLine()">更新航线</el-button>
+      <el-button type="primary" v-if="pageData.planId" @click="editLine()"
+        >更新</el-button
+      >
+      <el-button type="primary" v-if="!pageData.planId" @click="addLine()"
+        >新建</el-button
+      >
     </div>
   </div>
 </template>
@@ -84,43 +98,29 @@ const handleClick = (item) => {
   pageData.planName = item.planName;
   store.device1Line = JSON.parse(item.planInfo);
   pageData.planId = item.planId;
-  FavoriteRef.value.initMapFn();
+  setTimeout(() => {
+    FavoriteRef.value.initMapFn();
+  }, 1000);
 };
 
 // 创建航线
+const createLine = () => {
+  pageData.planId = null;
+  pageData.planName = '新建航线';
 
-const addflightinfo = (planId) => {
-  postAddPlanExecute({
-    planId: planId,
-    deviceKey: '长空之王',
-    createTime: '2023-10-19 15:10:00',
-    planStatus: 0,
-  }).then((res) => {
-    ElMessage({
-      message: '计划下达成功',
-      type: 'success',
-    });
-    getInfo();
-  });
-};
-
-const editflightinfo = (planId) => {
-  postEeditPlanExecute({
-    planId: planId,
-    deviceKey: '长空之王',
-    planStatus: 2,
-  }).then((res) => {
-    ElMessage({
-      message: '计划取消成功',
-      type: 'success',
-    });
-    getInfo();
-  });
+  store.device1Line = [
+    [116.326755, 39.788338],
+    [116.33287, 39.798175],
+  ];
+  setTimeout(() => {
+    FavoriteRef.value.initMapFn();
+  }, 1000);
 };
 
 const addLine = () => {
+  test();
   postAddPlanInfo({
-    planName: '航线名称',
+    planName: pageData.planName,
     planInfo: JSON.stringify(store.device1Line),
   }).then((res) => {
     console.log(res);
@@ -131,6 +131,7 @@ const addLine = () => {
 // 更新航线
 
 const editLine = () => {
+  test();
   postEditPlanInfo({
     planName: pageData.planName,
     planId: pageData.planId,
@@ -149,7 +150,6 @@ const dellteLine = (id) => {
   postDeletePlanInfo({
     planId: id,
   }).then((res) => {
-    f;
     console.log(res);
     ElMessage({
       message: '航线删除成功',
@@ -183,12 +183,18 @@ onMounted(() => {
   getInfo();
   // store.device1Pos = [0, 0];
 
-  store.device1Pos = null;
+  // store.device1Pos = [0, 0];
 });
 // hang
 </script>
 
 <style lang="less" scoped>
+.create-btn {
+  margin-bottom: 12px;
+}
+.planName-line {
+  margin-bottom: 14px;
+}
 .page-container {
   position: relative;
   background-color: #101010;

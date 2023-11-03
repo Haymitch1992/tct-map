@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="compass-container">
-      <div class="compass" style="transform: rotate(56.107deg)"></div>
+      <div class="compass" :style="{ transform: computedRotate }"></div>
       <div class="arrow"></div>
       <div class="main-text">
         <span class="height-text">{{ store.altitude }}</span>
@@ -39,7 +39,13 @@
 
 <script lang="ts" setup>
 import { mainStore } from '../store/index';
+import { reactive, computed } from 'vue';
 const store = mainStore();
+
+const computedRotate = computed(() => {
+  const result = `rotate(${store.headingAngle} deg)`;
+  return result;
+});
 </script>
 
 <style lang="less" scoped>

@@ -3,7 +3,12 @@
 <template>
   <div class="page-container">
     <page-top></page-top>
-    <map-container class="map-container" ref="FavoriteRef"></map-container>
+    <map-container
+      :showAir="false"
+      :showLine2="false"
+      class="map-container"
+      ref="FavoriteRef"
+    ></map-container>
     <div class="right-container">
       <h3>航线设置</h3>
       <h4>飞行计划列表</h4>
@@ -16,7 +21,7 @@
               size="small"
               type="warning"
               v-if="scope.row.planStatus === 0"
-              @click="editflightinfo(scope.row.planId)"
+              @click="editflightinfo(scope.row.planId, scope.row.deviceKey)"
               >取消</el-button
             >
           </template>
@@ -26,7 +31,7 @@
       <h4>航线列表</h4>
       <!-- {{ pageData.lineList }} -->
       <el-table :data="pageData.lineList" border style="width: 100%">
-        <el-table-column prop="planName" label="航线名称" width="150" />
+        <el-table-column prop="planName" label="航线ID" width="100" />
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button
@@ -35,17 +40,23 @@
               @click="handleClick(scope.row)"
               >选择</el-button
             >
-            <el-button
+            <!-- <el-button
               type="danger"
               @click="dellteLine(scope.row.planId)"
               size="small"
               >删除</el-button
+            > -->
+            <el-button
+              size="small"
+              type="warning"
+              @click="addflightinfo(scope.row.planId, '无人机')"
+              >无人机</el-button
             >
             <el-button
               size="small"
               type="warning"
-              @click="addflightinfo(scope.row.planId)"
-              >下达</el-button
+              @click="addflightinfo(scope.row.planId, '有人机')"
+              >有人机</el-button
             >
             <!-- 
             <el-button
@@ -119,10 +130,10 @@ const handleClick = (item) => {
 
 // 创建航线
 
-const addflightinfo = (planId) => {
+const addflightinfo = (planId, str) => {
   postAddPlanExecute({
     planId: planId,
-    deviceKey: '长空之王',
+    deviceKey: str,
     createTime: '2023-10-19 15:10:00',
     planStatus: 0,
   }).then((res) => {
@@ -134,10 +145,10 @@ const addflightinfo = (planId) => {
   });
 };
 
-const editflightinfo = (planId) => {
+const editflightinfo = (planId, str) => {
   postEeditPlanExecute({
     planId: planId,
-    deviceKey: '长空之王',
+    deviceKey: str,
     planStatus: 2,
   }).then((res) => {
     ElMessage({
@@ -211,9 +222,8 @@ const getInfo = () => {
 
 onMounted(() => {
   getInfo();
-  // store.device1Pos = [0, 0];
-
-  store.device1Pos = null;
+  // store.device2Pos = null;
+  // store.device2Line = null;
 });
 // hang
 </script>

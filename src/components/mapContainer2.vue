@@ -5,6 +5,19 @@ import mapItem3 from './map-item-3.vue';
 import airImg1 from '../assets/直升机.png';
 import { mainStore } from '../store/index';
 
+const props = defineProps({
+  showAir: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  showLine2: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+});
+
 const store = mainStore();
 window._AMapSecurityConfig = {
   securityJsCode: '7e5bc09f4481b57e427367314025db90',
@@ -17,6 +30,7 @@ console.log(path, 'path');
 const showBtn = ref(true);
 var map = shallowRef(null);
 var heatmap = '';
+var circle = null;
 var dialogVisible2 = ref(false);
 const initMap = () => {
   AMapLoader.load({
@@ -48,7 +62,7 @@ const initMap = () => {
         showBuildingBlock: false,
         zoom: 15.8, //初始化地图级别
         terrain: true,
-        center: [116.316747, 39.827918], //初始化地图中心点位置
+        center: [116.12089422840408, 39.9526116627722], //初始化地图中心点位置
         // mapStyle: 'amap://styles/whitesmoke',
         layers: [
           new AMap.TileLayer.Satellite(),
@@ -70,12 +84,31 @@ const initMap = () => {
           },
         })
       );
+
+      circle = new AMap.Circle({
+        center: new AMap.LngLat(116.068742 , 39.894194), // 圆心位置,
+        radius: 500, //半径
+        strokeColor: '#F33', //线颜色
+        strokeOpacity: 1, //线透明度
+        strokeWeight: 3, //线粗细度
+        fillColor: '#ee2200', //填充颜色
+        fillOpacity: 0.35, //填充透明度
+      });
+
+      if (props.showAir) {
+        draw3dPoint2();
+        draw3dPoint3();
+      }
+      if (props.showLine2) {
+        draw3dLine2();
+        drawSubLine2();
+      }
       // 创建楼快
       draw3dLine();
-      drawSubLine();
-      drawReact();
 
-      draw3dPoint2();
+      drawSubLine();
+
+      drawReact();
     })
     .catch((e) => {
       console.log(e);
@@ -105,7 +138,6 @@ const drawSubLine = () => {
   if (!store.device1Line) return;
   var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
   map.add(object3Dlayer);
-
   var lines = new AMap.Object3D.Line();
   var lineGeo = lines.geometry;
   var path = store.device1Line;
@@ -139,6 +171,43 @@ const drawSubLine = () => {
   object3Dlayer.add(points3D);
 };
 
+const drawSubLine2 = () => {
+  if (!store.device2Line) return;
+  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+  map.add(object3Dlayer);
+
+  var lines = new AMap.Object3D.Line();
+  var lineGeo = lines.geometry;
+  var path = store.device2Line;
+  var points3D = new AMap.Object3D.RoundPoints();
+  points3D.transparent = true;
+  var pointsGeo = points3D.geometry;
+  var height = -2000;
+  for (var i = 0; i < path.length; i++) {
+    var center = map.lngLatToGeodeticCoord(path[i]);
+
+    // 连线
+    lineGeo.vertices.push(center.x, center.y, 0);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+    lineGeo.vertices.push(center.x, center.y, height);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, 0); // 尾部小点
+    pointsGeo.pointSizes.push(6);
+    pointsGeo.vertexColors.push(0, 0, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, height); // 空中点
+    pointsGeo.pointSizes.push(10);
+    pointsGeo.vertexColors.push(0.7, 0, 1, 1);
+    // height -= 1000;
+  }
+
+  points3D.borderColor = [0.4, 0.8, 1, 1];
+  points3D.borderWeight = 1;
+
+  object3Dlayer.add(lines);
+  object3Dlayer.add(points3D);
+};
 // 绘制遮挡物
 
 const drawReact = () => {
@@ -248,6 +317,23 @@ const draw3dLine = () => {
       path: store.device1Line,
       height: [2000, 2000, 2000, 2000, 2000, 2000],
       color: 'rgba(55,129,240, 0.9)',
+      width: 6,
+    });
+
+    meshLine.transparent = true;
+    object3Dlayer.add(meshLine);
+    meshLine['backOrFront'] = 'both';
+    map.add(object3Dlayer);
+  });
+};
+const draw3dLine2 = () => {
+  if (!store.device2Line) return;
+  map.plugin(['Map3D'], function () {
+    var object3Dlayer = new AMap.Object3DLayer();
+    var meshLine = new AMap.Object3D.MeshLine({
+      path: store.device2Line,
+      height: [2000, 2000, 2000, 2000, 2000, 2000],
+      color: 'rgba(155,129,240, 0.9)',
       width: 6,
     });
 
@@ -399,6 +485,44 @@ const draw3dPoint2 = () => {
   object3Dlayer.add(lines);
   object3Dlayer.add(points3D);
 };
+const draw3dPoint3 = () => {
+  if (!store.device2Pos) return;
+  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+  map.add(object3Dlayer);
+
+  var lines = new AMap.Object3D.Line();
+  var lineGeo = lines.geometry;
+  var path = [store.device2Pos];
+  var points3D = new AMap.Object3D.RoundPoints();
+  points3D.transparent = true;
+  var pointsGeo = points3D.geometry;
+  var height = -2000;
+  for (var i = 0; i < path.length; i++) {
+    var center = map.lngLatToGeodeticCoord(path[i]);
+
+    // 连线
+    lineGeo.vertices.push(center.x, center.y, 0);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+    lineGeo.vertices.push(center.x, center.y, height);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, 0); // 尾部小点
+    pointsGeo.pointSizes.push(6);
+    pointsGeo.vertexColors.push(0, 0, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, height); // 空中点
+    pointsGeo.pointSizes.push(10);
+    pointsGeo.vertexColors.push(0.7, 1, 1, 1);
+    // height -= 1000;
+  }
+
+  points3D.borderColor = [0.4, 0.8, 1, 1];
+  points3D.borderWeight = 1;
+  saveLines = lines;
+  savepoints3D = points3D;
+  object3Dlayer.add(lines);
+  object3Dlayer.add(points3D);
+};
 // 结束编辑
 
 const closeEdit = () => {
@@ -415,19 +539,34 @@ onMounted(() => {
 });
 const count = ref(0);
 
+// 显示火灾
+const showWarning = () => {
+  map.add(circle);
+  map.setFitView();
+};
+// 隐藏火灾
+const hideWarning = () => {
+  map.remove(circle);
+  map.setFitView();
+};
+
+const initMapFn = () => {
+  initMap();
+};
+
 // 暴露出方法
 defineExpose({
   closeEdit,
   startEdit,
+  showWarning,
+  hideWarning,
+  initMapFn,
 });
 
 watch(
   () => store.device1Line,
   (data) => {
     if (store.device1Line) {
-      // map.clearMap();
-      // map.remove(saveLines);
-      // map.remove(savepoints3D);
       initMap();
     }
   },
@@ -439,10 +578,18 @@ watch(
   () => store.device1Pos,
   (a) => {
     if (store.device1Pos) {
-      // map.remove(saveLines);
-      // map.remove(savepoints3D);
-      // console.log(123)
       draw3dPoint2();
+    }
+  },
+  {
+    deep: true,
+  }
+);
+watch(
+  () => store.device2Pos,
+  (a) => {
+    if (store.device2Pos) {
+      draw3dPoint3();
     }
   },
   {

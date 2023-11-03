@@ -33,13 +33,13 @@ const METHOD = {
  */
 async function request(url: string, method: string, params?: object, config?: object) {
   axios.interceptors.request.use(function (config: any) {
-    const old = localStorage.getItem('login-store')
-    if (old) { 
-      let obj = JSON.parse(old)
-      config.headers.usertoken = obj.user_token
-      config.headers.userid = obj.user_id
-      config.headers.cipher = obj.cipher
-    }
+    // const old = localStorage.getItem('login-store')
+    // if (old) { 
+    //   let obj = JSON.parse(old)
+    //   config.headers.usertoken = obj.user_token
+    //   config.headers.userid = obj.user_id
+    //   config.headers.cipher = obj.cipher
+    // }
     // 在发送请求之前做些什么
 
     return config;

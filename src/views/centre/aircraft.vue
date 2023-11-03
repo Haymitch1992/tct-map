@@ -41,7 +41,7 @@ const test = () => {
       postFlightInfo({
         // planId: 7,
         planId: res.data.data.planId,
-        deviceKey: '长空之王',
+        deviceKey: '无人机',
       }).then((res2) => {
         if (!res2.data) {
           clearInterval(timer);

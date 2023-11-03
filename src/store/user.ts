@@ -26,13 +26,13 @@ export const userStore = defineStore('userStore', {
 })
 
 // 保存数据
-const instance = userStore()
-instance.$subscribe((_, state) => { 
-  localStorage.setItem('login-store', JSON.stringify({ ...state }))
-})
+// const instance = userStore()
+// instance.$subscribe((_, state) => { 
+//   localStorage.setItem('login-store', JSON.stringify({ ...state }))
+// })
 
-// 获取数据
-const old = localStorage.getItem('login-store')
-if (old) { 
-  instance.$state=JSON.parse(old)
-}
+// // 获取数据
+// const old = localStorage.getItem('login-store')
+// if (old) { 
+//   instance.$state=JSON.parse(old)
+// }
