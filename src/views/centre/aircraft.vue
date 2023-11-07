@@ -28,7 +28,7 @@ var timer = null;
 var timer2 = null;
 const test = () => {
   getEeditPlanExecute({
-    deviceKey: '有人机',
+    deviceKey: '长空之王',
   }).then((res) => {
     console.log(res.data);
     store.device1Line = JSON.parse(res.data.data.planInfo);
@@ -37,7 +37,7 @@ const test = () => {
     timer = setInterval(() => {
       postFlightInfo({
         planId: res.data.data.planId,
-        deviceKey: '有人机',
+        deviceKey: '长空之王',
       }).then((res2) => {
         if (!res2.data) {
           clearInterval(timer);
@@ -49,18 +49,19 @@ const test = () => {
         //
         pageData.currentData = res2.data.data;
         let obj2 = res2.data.data;
-        // store.device1Pos = wgs84togcj02(
-        //   parseFloat(pageData.currentData.longitude),
-        //   parseFloat(pageData.currentData.latitude)
-        // );
+        store.device1Pos = wgs84togcj02(
+          parseFloat(pageData.currentData.longitude),
+          parseFloat(pageData.currentData.latitude)
+        );
 
-        store.device1Pos = [
-          parseFloat(obj2.longitude),
-          parseFloat(obj2.latitude),
-        ];
+        // store.device1Pos = [
+        //   parseFloat(obj2.longitude),
+        //   parseFloat(obj2.latitude),
+        // ];
         store.altitude = pageData.currentData.altitude;
-        // let obj = JSON.parse(pageData.currentData.flightTrack);
 
+        let obj = JSON.parse(pageData.currentData.flightTrack);
+        store.headingAngle = obj.headingAngle;
         // pageData.flightTrack = obj;
 
         if (res2.data.data.warningType === '10001') {

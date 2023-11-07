@@ -56,7 +56,7 @@ export async function postFlightInfoGround(loginForm:any) {
 }
 
 export async function postFlightInfo(loginForm:any) { 
-  return request('/api/emuairPlane/flightInfoGround', METHOD.POST,
+  return request('/api/emuairPlane/flightInfo', METHOD.POST,
     loginForm)
 }
 

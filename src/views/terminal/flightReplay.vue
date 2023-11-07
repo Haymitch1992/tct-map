@@ -78,7 +78,7 @@ var save = null;
 
 const test = () => {
   getEeditPlanExecute({
-    deviceKey: '有人机',
+    deviceKey: '长空之王',
   }).then((res) => {
     store.device1Line = JSON.parse(res.data.data.planInfo);
     save = res.data.data.planInfo;
@@ -86,7 +86,7 @@ const test = () => {
     timer = setInterval(() => {
       postFlightInfoGround({
         planId: res.data.data.planId,
-        deviceKey: '有人机',
+        deviceKey: '长空之王',
       }).then((res2) => {
         pageData.currentData = res2.data.data;
         let obj = res2.data.data;

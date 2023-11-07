@@ -48,8 +48,8 @@
             <el-button
               size="small"
               type="warning"
-              @click="addflightinfo(scope.row.planId, '有人机')"
-              >有人机</el-button
+              @click="addflightinfo(scope.row.planId, '长空之王')"
+              >长空之王</el-button
             >
           </template>
         </el-table-column>
