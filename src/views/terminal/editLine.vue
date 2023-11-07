@@ -41,11 +41,11 @@
 
       <h4>航线名称</h4>
       <el-input v-model="pageData.planName" class="planName-line"></el-input>
-
+      <!-- 
       <h4>航线数据：</h4>
       <span class="data-text">
         {{ store.device1Line }}
-      </span>
+      </span> -->
       <el-button type="primary" @click="startSetLine()">编辑</el-button>
       <el-button type="primary" @click="test()">结束编辑</el-button>
 

@@ -13,21 +13,9 @@
 
       <div class="obstacle-info" data-v-242b641f="" data-v-28afdb6c="">
         <div class="obstacle-bar" data-v-242b641f=""></div>
-        <div
-          class="bar-area warning"
-          data-v-242b641f=""
-          style="top: 71.6%; bottom: 8.4%"
-        ></div>
-        <div
-          class="bar-area danger"
-          data-v-242b641f=""
-          style="top: 91.6%; bottom: calc(0%)"
-        ></div>
-        <span
-          class="obstacle-alert bottom"
-          data-v-242b641f=""
-          style="top: 100%"
-        ></span>
+        <div class="bar-area warning" style="top: 71.6%; bottom: 8.4%"></div>
+        <div class="bar-area danger" style="top: 91.6%; bottom: calc(0%)"></div>
+        <span class="obstacle-alert bottom" style="top: 100%"></span>
         <div class="marker zero-marker" data-v-242b641f=""></div>
         <span class="agl-number map-text-shadow" data-v-242b641f="">{{
           store.altitude
@@ -43,7 +31,7 @@ import { reactive, computed } from 'vue';
 const store = mainStore();
 
 const computedRotate = computed(() => {
-  const result = `rotate(${store.headingAngle} deg)`;
+  const result = `rotate(${store.headingAngle}deg)`;
   return result;
 });
 </script>
@@ -64,11 +52,12 @@ const computedRotate = computed(() => {
   position: relative;
 }
 .compass {
-  background: #000 url('../assets/compass.svg') no-repeat 0px 0px;
+  background: rgba(0, 0, 0, 0.6) url('../assets/compass.svg') no-repeat 0px 0px;
   background-size: 150px 150px;
   border-radius: 50%;
   width: 150px;
   height: 150px;
+  transition: all 1s;
 }
 .compass::after {
   content: '';

@@ -45,16 +45,6 @@ export async function postEeditPlanExecute(loginForm:any) {
     loginForm)
 }
 
-
-
-
-
-// 获取飞行计划
-
-// export async function getEeditPlanExecute() { 
-//   return request('/api/planExecute/selectPlanInfo?deviceKey=长空之王', METHOD.GET,
-//     )
-// }
 export async function getEeditPlanExecute(loginForm:any) { 
   return request(`/api/planExecute/selectPlanInfo`, METHOD.GET,
     loginForm)
@@ -66,9 +56,14 @@ export async function postFlightInfoGround(loginForm:any) {
 }
 
 export async function postFlightInfo(loginForm:any) { 
-  return request('/api/emuairPlane/flightInfo', METHOD.POST,
+  return request('/api/emuairPlane/flightInfoGround', METHOD.POST,
     loginForm)
 }
+
+// export async function postFlightInfo(loginForm:any) { 
+//   return request('/api/emuairPlane/flightInfo', METHOD.POST,
+//     loginForm)
+// }
 
 
 // 新增任务下达

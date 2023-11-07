@@ -29,7 +29,6 @@
       </el-table>
 
       <h4>航线列表</h4>
-      <!-- {{ pageData.lineList }} -->
       <el-table :data="pageData.lineList" border style="width: 100%">
         <el-table-column prop="planName" label="航线ID" width="100" />
         <el-table-column fixed="right" label="操作">
@@ -40,12 +39,6 @@
               @click="handleClick(scope.row)"
               >选择</el-button
             >
-            <!-- <el-button
-              type="danger"
-              @click="dellteLine(scope.row.planId)"
-              size="small"
-              >删除</el-button
-            > -->
             <el-button
               size="small"
               type="warning"
@@ -58,37 +51,15 @@
               @click="addflightinfo(scope.row.planId, '有人机')"
               >有人机</el-button
             >
-            <!-- 
-            <el-button
-              size="small"
-              type="warning"
-              @click="editflightinfo(scope.row.planId)"
-              >取消</el-button
-            > -->
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- <h4>航线名称</h4>
-      <el-input v-model="pageData.planName"></el-input>
-
-      <h4>航线数据：</h4>
-      <span class="data-text">
-        {{ store.device1Line }}
-      </span>
-
-      <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
-      <el-button type="primary" @click="test()">保存航线</el-button> -->
-      <!-- <el-button type="primary" @click="test()">任务下达</el-button> -->
-
-      <!-- <el-button type="primary" @click="addLine()">创建航线</el-button> -->
-      <!-- <el-button type="primary" @click="editLine()">更新航线</el-button> -->
     </div>
   </div>
 </template>
 
 <script setup>
-import mapContainer from '../../components/mapContainer2.vue';
+import mapContainer from '../../components/mapContainer.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import videoBox from '../../components/video.vue';
@@ -115,17 +86,13 @@ const FavoriteRef = ref(null);
 const store = mainStore();
 // 获取数据
 
-const test = () => {
-  FavoriteRef.value.closeEdit();
-};
-const startSetLine = () => {
-  FavoriteRef.value.startEdit();
-};
-
 const handleClick = (item) => {
   pageData.planName = item.planName;
   store.device1Line = JSON.parse(item.planInfo);
   pageData.planId = item.planId;
+  setTimeout(() => {
+    FavoriteRef.value.initMapFn();
+  }, 1000);
 };
 
 // 创建航线

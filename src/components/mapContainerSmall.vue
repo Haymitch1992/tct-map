@@ -2,7 +2,7 @@
 import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import mapItem3 from './map-item-3.vue';
-import airImg1 from '../assets/直升机.png';
+import airImg1 from '../assets/arrow.png';
 import { mainStore } from '../store/index';
 
 const store = mainStore();
@@ -39,32 +39,37 @@ const initMap = () => {
         viewMode: '3D', //是否为3D地图模式
         zoom: 15.8, //初始化地图级别
         terrain: true,
+        dragEnable: true,
+        zoomEnable: true,
         center: [116.316747, 39.827918], //初始化地图中心点位置
         // mapStyle: 'amap://styles/whitesmoke',
         layers: [new AMap.TileLayer.Satellite()],
         // mapStyle: 'amap://styles/e50de4d7443ce2cc633112de2de760df',
       });
 
-      var controlBar = new AMap.ControlBar({
-        position: {
-          left: '10px',
-          top: '10px',
-        },
-      });
-      controlBar.addTo(map);
+      // var controlBar = new AMap.ControlBar({
+      //   position: {
+      //     left: '10px',
+      //     top: '10px',
+      //   },
+      // });
+      // controlBar.addTo(map);
 
-      var toolBar = new AMap.ToolBar({
-        position: {
-          left: '40px',
-          top: '110px',
-        },
-      });
-      toolBar.addTo(map);
+      // var toolBar = new AMap.ToolBar({
+      //   position: {
+      //     left: '40px',
+      //     top: '110px',
+      //   },
+      // });
+      // toolBar.addTo(map);
 
       drawAir();
       drawLine();
       // var polyEditor = new AMap.PolyEditor(map, polygon)
       // polyEditor = new AMap.PolygonEditor(map)
+      map.on('click', function (e) {
+        console.log(e.lnglat.getLng(), e.lnglat.getLat());
+      });
     })
     .catch((e) => {
       console.log(e);
@@ -98,7 +103,7 @@ const drawLine = (lineData) => {
     bubble: true,
     dirColor: 'pink',
     strokeColor: '#3366cc', // 线颜色
-    strokeWeight: 4,
+    strokeWeight: 10,
   });
 
   // polyEditor = new AMap.PolylineEditor(map, polyline1);
@@ -122,7 +127,7 @@ const drawAirAutoRotation = () => {
   marker = new AMap.Marker({
     map: map,
     position: [116.478935, 39.997761],
-    icon: 'https://webapi.amap.com/images/car.png',
+    // icon: 'https://webapi.amap.com/images/car.png',
     offset: new AMap.Pixel(-26, -13),
     autoRotation: true,
     animateEnable: true,
@@ -131,30 +136,31 @@ const drawAirAutoRotation = () => {
   marker.moveAlong(store.device1Line, 200);
 };
 
-
 const drawAir = () => {
-  map.plugin('AMap.Icon', function () {
-    var airIcon = new AMap.Icon({
-      // 图标尺寸
-      size: new AMap.Size(48, 48),
-      // 图标的取图地址
-      image: airImg1,
+  // map.plugin('AMap.Icon', function () {
+  //   var airIcon = new AMap.Icon({
+  //     // 图标尺寸
+  //     size: new AMap.Size(48, 48),
+  //     // 图标的取图地址
+  //     image: airImg1,
 
-      anchor: 'center',
-      // 图标所用图片大小
-      imageSize: new AMap.Size(48, 48),
+  //     anchor: 'center',
+  //     // 图标所用图片大小
+  //     imageSize: new AMap.Size(48, 48),
 
-      // 图标取图偏移量
-    });
-    var airMarker = new AMap.Marker({
-      position: new AMap.LngLat(...store.device1Pos),
-      icon: airIcon,
-      offset: new AMap.Pixel(-24, -24),
-    });
-    saveAir = airMarker;
-    map.add([airMarker]);
-    map.setFitView([airMarker]);
-  });
+  //     // 图标取图偏移量
+  //   });
+  //   var airMarker = new AMap.Marker({
+  //     position: new AMap.LngLat(...store.device1Pos),
+  //     icon: airIcon,
+  //     offset: new AMap.Pixel(-24, -24),
+  //   });
+  //   saveAir = airMarker;
+  //   map.add([airMarker]);
+  // });
+  // let num = parseFloat(store.device1Pos[1]) + 0.0036;
+  // map.setCenter([store.device1Pos[0], num]);
+  map.setCenter([...store.device1Pos]);
 };
 
 // 结束编辑
@@ -201,7 +207,7 @@ watch(
     if (saveAir) {
       map.remove(saveAir);
     }
-
+    changeRotation(-store.headingAngle);
     drawAir();
     drawLine();
   },
@@ -209,6 +215,19 @@ watch(
     deep: true,
   }
 );
+
+// 偏转变化 旋转画布
+watch(
+  () => store.headingAngle,
+  (a) => {
+    changeRotation(-store.headingAngle);
+  },
+  {
+    deep: true,
+  }
+);
+
+//
 </script>
 
 <template>
@@ -221,7 +240,7 @@ watch(
 }
 #container {
   width: 1024px;
-  height: 580px;
+  height: 950px;
   position: relative;
 }
 .pos-container {

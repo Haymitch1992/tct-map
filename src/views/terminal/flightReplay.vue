@@ -70,25 +70,21 @@ const hideWarning = () => {
 const pageData = reactive({
   currentData: null,
 });
-var num = 0;
+
 var timer = null;
 var timer2 = null;
-const getInfo = () => {};
+
 var save = null;
+
 const test = () => {
-  num = 0;
   getEeditPlanExecute({
     deviceKey: '有人机',
   }).then((res) => {
-    // console.log(res.data.data.planInfo, '1111111111111');
-
     store.device1Line = JSON.parse(res.data.data.planInfo);
     save = res.data.data.planInfo;
     // 存在飞行计划 循环请求
     timer = setInterval(() => {
-      num += 10;
       postFlightInfoGround({
-        // planId: 7,
         planId: res.data.data.planId,
         deviceKey: '有人机',
       }).then((res2) => {
@@ -104,7 +100,6 @@ const test = () => {
         // );
 
         store.altitude = pageData.currentData.altitude;
-
         if (res2.data.data.warningType === '10001') {
           ElMessage({
             message: res2.data.data.warningInfo,
@@ -114,17 +109,18 @@ const test = () => {
       });
     }, 1000);
   });
-
+  // 场景1 执行有人机
+  // 场景2 执行有人机 和 无人机
+  if (store.scene === 1) {
+    return;
+  }
   getEeditPlanExecute({
     deviceKey: '无人机',
   }).then((res) => {
-    // console.log(res.data.data.planInfo, '1111111111111');
     store.device2Line = JSON.parse(res.data.data.planInfo);
     // 存在飞行计划 循环请求
     timer2 = setInterval(() => {
-      num += 10;
       postFlightInfoGround({
-        // planId: 7,
         planId: res.data.data.planId,
         deviceKey: '无人机',
       }).then((res2) => {
@@ -154,7 +150,6 @@ const test = () => {
 onMounted(() => {
   store.device1Pos = [116.316062, 39.828417];
   test();
-  // store.device1Pos = [116.316062, 39.828417];
 });
 onUnmounted(() => {
   clearInterval(timer);

@@ -86,7 +86,7 @@ const initMap = () => {
       );
 
       circle = new AMap.Circle({
-        center: new AMap.LngLat(116.068742 , 39.894194), // 圆心位置,
+        center: new AMap.LngLat(116.068742, 39.894194), // 圆心位置,
         radius: 500, //半径
         strokeColor: '#F33', //线颜色
         strokeOpacity: 1, //线透明度
@@ -550,6 +550,10 @@ const hideWarning = () => {
   map.setFitView();
 };
 
+const setFitViewFn = () => {
+  map.setFitView();
+};
+
 const initMapFn = () => {
   initMap();
 };
@@ -561,6 +565,7 @@ defineExpose({
   showWarning,
   hideWarning,
   initMapFn,
+  setFitViewFn,
 });
 
 watch(
@@ -568,6 +573,7 @@ watch(
   (data) => {
     if (store.device1Line) {
       initMap();
+      // setFitViewFn();
     }
   },
   {
