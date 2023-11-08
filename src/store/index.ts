@@ -14,7 +14,7 @@ export const mainStore = defineStore('main', {
       device2Line: [[116.326755, 39.788338], [116.33287, 39.798175]], // 无人机 航线
       altitude: 0, // 有人机 高度
       headingAngle: 0, // 有人机偏转角度
-      scene: 2// 场景1 单个飞机  场景2 有人机和无人机 
+      scene: 1// 场景1 单个飞机  场景2 有人机和无人机 
     }
   },
   getters: {

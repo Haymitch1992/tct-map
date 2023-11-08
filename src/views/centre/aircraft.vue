@@ -81,7 +81,7 @@ const test = () => {
 onMounted(() => {
   timer2 = setInterval(() => {
     test();
-  }, 1000);
+  }, 100);
 });
 onUnmounted(() => {
   clearInterval(timer);

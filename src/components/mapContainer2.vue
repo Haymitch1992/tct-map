@@ -50,7 +50,6 @@ const initMap = () => {
     .then((AMap) => {
       var buildings = new AMap.Buildings({
         zooms: [16, 18],
-
         zIndex: 10,
         heightFactor: 2, // 2 倍于默认高度（3D 视图下生效）
       });
@@ -62,7 +61,8 @@ const initMap = () => {
         showBuildingBlock: false,
         zoom: 15.8, //初始化地图级别
         terrain: true,
-        center: [116.12089422840408, 39.9526116627722], //初始化地图中心点位置
+        center: [...store.device1Pos],
+        // center: [116.326755, 39.788338], //初始化地图中心点位置
         // mapStyle: 'amap://styles/whitesmoke',
         layers: [
           new AMap.TileLayer.Satellite(),
@@ -144,7 +144,7 @@ const drawSubLine = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -2000;
+  var height = -1000;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 
@@ -182,7 +182,7 @@ const drawSubLine2 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -2000;
+  var height = -1000;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 
@@ -315,7 +315,7 @@ const draw3dLine = () => {
     var object3Dlayer = new AMap.Object3DLayer();
     var meshLine = new AMap.Object3D.MeshLine({
       path: store.device1Line,
-      height: [2000, 2000, 2000, 2000, 2000, 2000],
+      height: [1000, 1000, 1000, 1000, 1000, 1000],
       color: 'rgba(55,129,240, 0.9)',
       width: 6,
     });
@@ -324,6 +324,7 @@ const draw3dLine = () => {
     object3Dlayer.add(meshLine);
     meshLine['backOrFront'] = 'both';
     map.add(object3Dlayer);
+    map.setCenter([...store.device1Pos]);
   });
 };
 const draw3dLine2 = () => {
@@ -332,7 +333,7 @@ const draw3dLine2 = () => {
     var object3Dlayer = new AMap.Object3DLayer();
     var meshLine = new AMap.Object3D.MeshLine({
       path: store.device2Line,
-      height: [2000, 2000, 2000, 2000, 2000, 2000],
+      height: [1000, 1000, 1000, 1000, 1000, 1000],
       color: 'rgba(155,129,240, 0.9)',
       width: 6,
     });
@@ -431,7 +432,7 @@ const draw3dPoint = () => {
   for (var p = 0; p < coords.length; p += 1) {
     var center = lnglatToG20(coords[p]);
 
-    geometry.vertices.push(center.x, center.y, -2000);
+    geometry.vertices.push(center.x, center.y, -1000);
     geometry.vertices.push(center.x, center.y, 0);
     geometry.pointSizes.push(80);
     geometry.vertexColors.push(p * 0.029, p * 0.015, p * 0.01, 0.5);
@@ -458,7 +459,7 @@ const draw3dPoint2 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -2000;
+  var height = -1000;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 
@@ -496,7 +497,7 @@ const draw3dPoint3 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -2000;
+  var height = -1000;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 

@@ -46,23 +46,6 @@ const initMap = () => {
         layers: [new AMap.TileLayer.Satellite()],
         // mapStyle: 'amap://styles/e50de4d7443ce2cc633112de2de760df',
       });
-
-      // var controlBar = new AMap.ControlBar({
-      //   position: {
-      //     left: '10px',
-      //     top: '10px',
-      //   },
-      // });
-      // controlBar.addTo(map);
-
-      // var toolBar = new AMap.ToolBar({
-      //   position: {
-      //     left: '40px',
-      //     top: '110px',
-      //   },
-      // });
-      // toolBar.addTo(map);
-
       drawAir();
       drawLine();
       // var polyEditor = new AMap.PolyEditor(map, polygon)

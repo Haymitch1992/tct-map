@@ -4,8 +4,8 @@
   <div class="page-container">
     <page-top></page-top>
     <map-container
-      :showAir="true"
-      :showLine2="true"
+      :showAir="false"
+      :showLine2="false"
       class="map-container"
       ref="FavoriteRef"
     ></map-container>
@@ -54,11 +54,6 @@ const FavoriteRef = ref(null);
 const store = mainStore();
 // 获取数据
 
-const test2 = () => {
-  var num1 = parseFloat(store.device1Pos[0]) + 0.0001;
-  var num2 = store.device1Pos[1] - 0;
-  store.device1Pos = [num1.toFixed(10), num2.toFixed(10)];
-};
 
 const showWarning = () => {
   FavoriteRef.value.showWarning();
@@ -76,39 +71,51 @@ var timer2 = null;
 
 var save = null;
 
+// 根据飞行器 获取航线 
+// 获取飞行器实时数据 
+
+const getInfo = (planId) => {
+  timer = setInterval(() => {
+    postFlightInfoGround({
+      planId: planId,
+      deviceKey: '长空之王',
+    }).then((res2) => {
+      pageData.currentData = res2.data.data;
+      let obj = res2.data.data;
+      // store.device1Pos = [
+      //   parseFloat(obj.longitude),
+      //   parseFloat(obj.latitude),
+      // ];
+      store.device1Pos = wgs84togcj02(
+        parseFloat(pageData.currentData.longitude),
+        parseFloat(pageData.currentData.latitude)
+      );
+
+      store.altitude = pageData.currentData.altitude;
+      if (res2.data.data.warningType === '10001') {
+        ElMessage({
+          message: res2.data.data.warningInfo,
+          type: 'warning',
+        });
+      }
+    });
+  }, 1000);
+};
+
 const test = () => {
   getEeditPlanExecute({
     deviceKey: '长空之王',
-  }).then((res) => {
-    store.device1Line = JSON.parse(res.data.data.planInfo);
-    save = res.data.data.planInfo;
-    // 存在飞行计划 循环请求
-    timer = setInterval(() => {
-      postFlightInfoGround({
-        planId: res.data.data.planId,
-        deviceKey: '长空之王',
-      }).then((res2) => {
-        pageData.currentData = res2.data.data;
-        let obj = res2.data.data;
-        store.device1Pos = [
-          parseFloat(obj.longitude),
-          parseFloat(obj.latitude),
-        ];
-        // store.device1Pos = wgs84togcj02(
-        //   parseFloat(pageData.currentData.longitude),
-        //   parseFloat(pageData.currentData.latitude)
-        // );
+  })
+    .then((res) => {
+      store.device1Line = JSON.parse(res.data.data.planInfo);
+      save = res.data.data.planInfo;
+      // 存在飞行计划 循环请求
+      getInfo(res.data.data.planId);
+    })
+    .catch((res) => {
+      getInfo('');
+    });
 
-        store.altitude = pageData.currentData.altitude;
-        if (res2.data.data.warningType === '10001') {
-          ElMessage({
-            message: res2.data.data.warningInfo,
-            type: 'warning',
-          });
-        }
-      });
-    }, 1000);
-  });
   // 场景1 执行有人机
   // 场景2 执行有人机 和 无人机
   if (store.scene === 1) {
@@ -125,18 +132,18 @@ const test = () => {
         deviceKey: '无人机',
       }).then((res2) => {
         let obj = res2.data.data;
-        store.device2Pos = [
-          parseFloat(obj.longitude),
-          parseFloat(obj.latitude),
-        ];
-        // store.device2Pos = wgs84togcj02(
+        // store.device2Pos = [
         //   parseFloat(obj.longitude),
-        //   parseFloat(obj.latitude)
-        // );
+        //   parseFloat(obj.latitude),
+        // ];
+        store.device2Pos = wgs84togcj02(
+          parseFloat(obj.longitude),
+          parseFloat(obj.latitude)
+        );
       });
 
       getEeditPlanExecute({
-        deviceKey: '有人机',
+        deviceKey: '长空之王',
       }).then((res) => {
         if (save !== res.data.data.planInfo) {
           store.device1Line = JSON.parse(res.data.data.planInfo);
@@ -148,7 +155,7 @@ const test = () => {
   });
 };
 onMounted(() => {
-  store.device1Pos = [116.316062, 39.828417];
+  // store.device1Pos = [116.316062, 39.828417];
   test();
 });
 onUnmounted(() => {
