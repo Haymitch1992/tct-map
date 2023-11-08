@@ -2,7 +2,11 @@
 <template>
   <div class="page-container">
     <page-top></page-top>
-    <map-container class="map-container"></map-container>
+    <map-container
+      :showAir="false"
+      :showLine2="false"
+      class="map-container"
+    ></map-container>
     <div class="right-container">
       <h3>创建项目</h3>
       <el-form
@@ -53,10 +57,7 @@ const formLabelAlign = reactive({
   type: 3,
 });
 
-onMounted(() => {
-  store.device1Pos = null;
-  store.device1Line = null;
-});
+onMounted(() => {});
 
 const tableData = [
   {

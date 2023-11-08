@@ -23,7 +23,7 @@ const getVideo = () => {
     autoplay: true,
     plugins: [FlvPlugin],
     // url: 'https://172.51.215.158:30082/live/34020000001320000026@34020000001320000001.flv',
-    url:"http://192.168.1.110:8080/live/livestream.flv",
+    url: 'http://192.168.1.110:8080/live/',
     flv: {
       retryCount: 3, // 重试 3 次，默认值
       retryDelay: 1000, // 每次重试间隔 1 秒，默认值
