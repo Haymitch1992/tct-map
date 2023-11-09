@@ -189,8 +189,7 @@ const getInfo = () => {
 
 onMounted(() => {
   getInfo();
-  // store.device2Pos = null;
-  // store.device2Line = null;
+
 });
 // hang
 </script>

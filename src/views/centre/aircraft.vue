@@ -3,7 +3,7 @@
 import mapContainer from '../../components/mapContainerSmall.vue';
 import videoBox from '../../components/videoSmall.vue';
 // import videoBox from '../../components/video-item.vue';
-
+import socket from '../../components/socket.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
@@ -26,6 +26,7 @@ const pageData = reactive({
 });
 var timer = null;
 var timer2 = null;
+var num = 0;
 const test = () => {
   getEeditPlanExecute({
     deviceKey: '长空之王',
@@ -63,8 +64,9 @@ const test = () => {
         let obj = JSON.parse(pageData.currentData.flightTrack);
         store.headingAngle = obj.headingAngle;
         // pageData.flightTrack = obj;
+        num += 1;
 
-        if (res2.data.data.warningType === '10001') {
+        if (res2.data.data.warningType === '10001' && num % 10 == 1) {
           ElMessage({
             message: res2.data.data.warningInfo,
             type: 'warning',
@@ -79,9 +81,9 @@ const test = () => {
   });
 };
 onMounted(() => {
-  timer2 = setInterval(() => {
-    test();
-  }, 100);
+  // timer2 = setInterval(() => {
+  //   test();
+  // }, 100);
 });
 onUnmounted(() => {
   clearInterval(timer);
@@ -122,6 +124,7 @@ const obj = {
         <video-box :options="obj"></video-box>
       </div>
     </div>
+    <socket></socket>
   </div>
 </template>
 

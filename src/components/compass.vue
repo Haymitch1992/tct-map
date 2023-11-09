@@ -31,7 +31,7 @@ import { reactive, computed } from 'vue';
 const store = mainStore();
 
 const computedRotate = computed(() => {
-  const result = `rotate(${store.headingAngle}deg)`;
+  const result = `rotate(-${store.headingAngle}deg)`;
   return result;
 });
 </script>
@@ -57,7 +57,7 @@ const computedRotate = computed(() => {
   border-radius: 50%;
   width: 150px;
   height: 150px;
-  transition: all 1s;
+  transition: all 0.1s;
 }
 .compass::after {
   content: '';

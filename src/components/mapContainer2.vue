@@ -305,7 +305,7 @@ const drawReact = () => {
     object3Dlayer.add(box);
   };
 
-  addBox([116.318662, 39.827917], 50, 3200, 500);
+  addBox([...store.barrierPos], ...store.barrierStyle);
 };
 // 绘制三维路线
 
@@ -459,7 +459,7 @@ const draw3dPoint2 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -1000;
+  var height = -store.altitude * 5;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 

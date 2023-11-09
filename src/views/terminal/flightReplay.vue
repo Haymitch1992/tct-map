@@ -12,7 +12,8 @@
     <div class="right-container">
       <h3>飞行监视</h3>
       <!-- <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
-    <el-button type="primary" @click="test()">保存航线</el-button> -->
+      <el-button type="primary" @click="test()">保存航线</el-button> -->
+      
       <!-- <h4>航线信息</h4>
       <span class="data-text">
         {{ store.device1Line }}
@@ -82,10 +83,13 @@ const getInfo = (planId) => {
     }).then((res2) => {
       pageData.currentData = res2.data.data;
       let obj = res2.data.data;
+
       // store.device1Pos = [
       //   parseFloat(obj.longitude),
       //   parseFloat(obj.latitude),
       // ];
+
+
       store.device1Pos = wgs84togcj02(
         parseFloat(pageData.currentData.longitude),
         parseFloat(pageData.currentData.latitude)
@@ -145,6 +149,7 @@ const test = () => {
       getEeditPlanExecute({
         deviceKey: '长空之王',
       }).then((res) => {
+        
         if (save !== res.data.data.planInfo) {
           store.device1Line = JSON.parse(res.data.data.planInfo);
           FavoriteRef.value.initMapFn();
