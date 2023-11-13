@@ -1,9 +1,9 @@
+<!-- 3d平面地图 -->
 <script setup>
 import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
-import mapItem3 from './map-item-3.vue';
-import airImg1 from '../assets/直升机.png';
 import { mainStore } from '../store/index';
+import { ElMessage } from 'element-plus';
 
 const props = defineProps({
   showAir: {
@@ -12,6 +12,11 @@ const props = defineProps({
     default: false,
   },
   showLine2: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  view3D: {
     type: Boolean,
     required: true,
     default: false,
@@ -31,6 +36,8 @@ const showBtn = ref(true);
 var map = shallowRef(null);
 var heatmap = '';
 var circle = null;
+var mouseTool = null;
+var mouseToolMark = null;
 var dialogVisible2 = ref(false);
 const initMap = () => {
   AMapLoader.load({
@@ -38,6 +45,7 @@ const initMap = () => {
     version: '1.4.15', // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
     plugins: [
       'AMap.ControlBar',
+      'AMap.MouseTool',
       'AMap.ToolBar',
       'AMap.KmlLayer',
       'AMap.Polyline',
@@ -45,6 +53,10 @@ const initMap = () => {
       'AMap.Icon',
       'AMap.Buildings',
       'AMap.Map3D',
+      'AMap.Polygon',
+      'AMap.PolyEditor',
+      'AMap.Marker',
+      'AMap.Text',
     ], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
   })
     .then((AMap) => {
@@ -92,27 +104,240 @@ const initMap = () => {
         strokeOpacity: 1, //线透明度
         strokeWeight: 3, //线粗细度
         fillColor: '#ee2200', //填充颜色
-        fillOpacity: 0.35, //填充透明度
+        fillOpacity: 0.8, //填充透明度
+      });
+      mouseTool = new AMap.MouseTool(map);
+      // mouseToolMark = new AMap.MouseTool(map);
+
+      mouseTool.on('draw', function (event) {
+        console.log(event, event.obj); //获取路径/范围
+        // event.obj 为绘制出来的覆盖物对象
+        if (event.obj.CLASS_NAME == 'AMap.Polygon') {
+          // store.centerPoint = [];
+          store.area = [event.obj.getPath()];
+
+          mouseTool.close(true);
+          ElMessage({
+            message: '任务区域绘制完成',
+            type: 'success',
+          });
+        }
+
+        if (event.obj.CLASS_NAME == 'AMap.Marker') {
+          ElMessage({
+            message: '中心点绘制完成',
+            type: 'success',
+          });
+          // store.area = [];
+          store.centerPoint = [event.obj.getPosition()];
+
+          mouseTool.close(true);
+        }
+        // let arr = returnLinePath(event.obj.getPath());
+        // drawTaskArea(event.obj.getPath());
+        // console.log(arr, '获得路径');
+
+        // 关闭当前鼠标操作
+
+        // 隐藏多边形
+
+        // 存储对象
       });
 
-      if (props.showAir) {
-        draw3dPoint2();
-        draw3dPoint3();
+      if (props.view3D) {
+        // 显示三维视图
+        if (props.showAir) {
+          draw3dPoint2();
+          draw3dPoint3();
+        }
+        if (props.showLine2) {
+          draw3dLine2();
+          drawSubLine2();
+        }
+        // 创建楼快
+        draw3dLine();
+        drawSubLine();
+      } else {
+        drawLine();
       }
-      if (props.showLine2) {
-        draw3dLine2();
-        drawSubLine2();
-      }
-      // 创建楼快
-      draw3dLine();
-
-      drawSubLine();
 
       drawReact();
+      drawAirport();
     })
     .catch((e) => {
       console.log(e);
     });
+};
+
+const drawLine = () => {
+  var polyline1 = new AMap.Polyline({
+    path: store.device1Line,
+    strokeWeight: 6,
+    strokeOpacity: 0.9,
+    zIndex: 50,
+    showDir: true,
+    height: 190,
+    bubble: true,
+    dirColor: 'pink',
+    strokeColor: '#3366cc', // 线颜色
+    strokeWeight: 10,
+  });
+
+  polyEditor = new AMap.PolyEditor(map, polyline1);
+
+  // polyEditor.setTarget(polyline1);
+  polyEditor.on('adjust', function (event) {
+    let path = event.target.getPath();
+    calcLine(path);
+  });
+  polyEditor.on('addnode', function (event) {
+    let path = event.target.getPath();
+    calcLine(path);
+  });
+  // polyEditor.open();
+  map.add([polyline1]);
+  map.setFitView([polyline1]);
+};
+
+// 绘制任务范围
+const drawTaskArea = (arr) => {
+  // 清除掉之前的的图层
+  // if (store.areaSave.length > 0) {
+  //   store.areaSave.forEach((item) => {
+  //     item.polyEditor.close();
+  //     map.remove(item.polygon);
+  //   });
+  // }
+
+  arr.forEach((item, index) => {
+    console.log(item, index, '绘制任务范围');
+    // 克隆数组item
+    // var pathArr = JSON.parse(JSON.stringify(item));
+    // console.log('pathArr', pathArr);
+    var polygon = new AMap.Polygon({
+      //       path: item,
+      path: returnLinePath(item),
+      strokeColor: '#FF33FF',
+      strokeWeight: 6,
+      strokeOpacity: 0.2,
+      fillOpacity: 0.4,
+      fillColor: '#1791fc',
+      zIndex: 50,
+    });
+
+    map.add(polygon);
+    map.setFitView();
+  });
+};
+
+const drawCenterPoint = (arr) => {
+  arr.forEach((item, index) => {
+    var marker = new AMap.Marker({
+      position: new AMap.LngLat(item.lng, item.lat),
+      offset: new AMap.Pixel(-13, -30),
+    });
+    map.add(marker);
+  });
+};
+
+const drawAirport = () => {
+  store.airportList.forEach((item, index) => {
+    let pos = JSON.parse(JSON.stringify(item.position));
+    var text = new AMap.Text({
+      text: item.name,
+      anchor: 'center', // 设置文本标记锚点
+      // draggable: true,
+      cursor: 'pointer',
+      style: {
+        padding: '0 .4rem',
+        'margin-bottom': '1rem',
+        'border-radius': '.25rem',
+        'background-color': 'white',
+        // 'width': '15rem',
+        'border-width': 0,
+        'box-shadow': '0 2px 6px 0 rgba(114, 124, 245, .5)',
+        'text-align': 'center',
+        'font-size': '12px',
+        color: 'blue',
+      },
+      position: pos,
+    });
+
+    var circle = new AMap.Circle({
+      center: new AMap.LngLat(...pos), // 圆心位置,
+      radius: 2500, //半径
+      strokeColor: '#026', //线颜色
+      strokeOpacity: 1, //线透明度
+      strokeWeight: 3, //线粗细度
+      fillColor: '#002266', //填充颜色
+      fillOpacity: 0.4, //填充透明度
+    });
+
+    var polygon = new AMap.Polygon({
+      path: returnLinePath(store.fireRange[0]),
+      strokeColor: '#F00',
+      strokeWeight: 6,
+      strokeOpacity: 0.2,
+      fillOpacity: 0.4,
+      fillColor: '#aa0000',
+      zIndex: 50,
+    });
+
+    map.add(polygon);
+    map.add(text);
+    map.add(circle);
+  });
+};
+
+// 编辑任务范围
+
+const editTaskPolygon = () => {
+  var polyEditor = new AMap.PolyEditor(map, polygon);
+
+  polyEditor.on('end', function (event) {
+    log.info('触发事件： end');
+    // event.target 即为编辑后的多边形对象
+  });
+  polyEditor.open();
+};
+
+// 绘制多边形
+
+const drawPolygon = () => {
+  mouseTool.polygon({
+    strokeColor: '#FF33FF',
+    strokeOpacity: 1,
+    strokeWeight: 6,
+    strokeOpacity: 0.2,
+    fillColor: '#1791fc',
+    fillOpacity: 0.4,
+    // 线样式还支持 'dashed'
+    strokeStyle: 'solid',
+    // strokeStyle是dashed时有效
+    strokeDasharray: [30, 10],
+  });
+};
+
+const drawMark = () => {
+  mouseTool.marker();
+  // mouseTool.mark({
+  //   icon: 'M100,100 L200,100 100,200 Z',
+  //   offsetX: 0,
+  //   offsetY: 0,
+  //   scale: 1,
+  //   strokeColor: '#FF33FF',
+  //   strokeOpacity: 1,
+  //   strokeWeight: 6,
+  //   strokeOpacity: 0.2,
+  // });
+};
+
+const returnLinePath = (data) => {
+  let arr = [];
+  for (const item of data) {
+    arr.push([item.lng, item.lat]);
+  }
+  return arr;
 };
 
 const calcLine = (data) => {
@@ -567,14 +792,18 @@ defineExpose({
   hideWarning,
   initMapFn,
   setFitViewFn,
+  drawPolygon,
+  drawMark,
 });
 
 watch(
   () => store.device1Line,
   (data) => {
     if (store.device1Line) {
-      initMap();
-      // setFitViewFn();
+      if (props.view3D) {
+        initMap();
+      }
+      
     }
   },
   {
@@ -586,6 +815,7 @@ watch(
   (a) => {
     if (store.device1Pos) {
       draw3dPoint2();
+      drawLine();
     }
   },
   {
@@ -597,6 +827,35 @@ watch(
   (a) => {
     if (store.device2Pos) {
       draw3dPoint3();
+    }
+  },
+  {
+    deep: true,
+  }
+);
+// 监听area的变化
+watch(
+  () => store.area,
+  (a) => {
+    // 绘制范围
+    map.clearMap();
+    drawTaskArea(store.area);
+    drawCenterPoint(store.centerPoint);
+    drawAirport();
+  },
+  {
+    deep: true,
+  }
+);
+watch(
+  () => store.centerPoint,
+  (a) => {
+    if (store.centerPoint) {
+      // 绘制范围
+      map.clearMap();
+      drawCenterPoint(store.centerPoint);
+      drawTaskArea(store.area);
+      drawAirport();
     }
   },
   {

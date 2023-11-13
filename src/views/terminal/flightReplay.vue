@@ -4,8 +4,9 @@
   <div class="page-container">
     <page-top></page-top>
     <map-container
-      :showAir="false"
-      :showLine2="false"
+      :showAir="true"
+      :showLine2="true"
+      :view3D="true"
       class="map-container"
       ref="FavoriteRef"
     ></map-container>
@@ -13,14 +14,14 @@
       <h3>飞行监视</h3>
       <!-- <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
       <el-button type="primary" @click="test()">保存航线</el-button> -->
-      
+
       <!-- <h4>航线信息</h4>
       <span class="data-text">
         {{ store.device1Line }}
       </span> -->
       <el-button @click="showWarning()">注入火灾</el-button>
       <el-button @click="hideWarning()">取消</el-button>
-      <h4>飞行器实时数据<el-tag type="success">通信延时 1000ms</el-tag></h4>
+      <h4>飞行器实时数据</h4>
       <el-tag size="small" type="success" v-if="store.device1Pos"
         >经度 {{ store.device1Pos[0] }}°</el-tag
       >
@@ -42,7 +43,7 @@
 </template>
 
 <script setup>
-import mapContainer from '../../components/mapContainer2.vue';
+import mapContainer from '../../components/mapContainer3D.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import videoBox from '../../components/video.vue';
@@ -54,7 +55,6 @@ import { wgs84togcj02 } from '../../vendors/coordtransform.js';
 const FavoriteRef = ref(null);
 const store = mainStore();
 // 获取数据
-
 
 const showWarning = () => {
   FavoriteRef.value.showWarning();
@@ -72,8 +72,8 @@ var timer2 = null;
 
 var save = null;
 
-// 根据飞行器 获取航线 
-// 获取飞行器实时数据 
+// 根据飞行器 获取航线
+// 获取飞行器实时数据
 
 const getInfo = (planId) => {
   timer = setInterval(() => {
@@ -88,7 +88,6 @@ const getInfo = (planId) => {
       //   parseFloat(obj.longitude),
       //   parseFloat(obj.latitude),
       // ];
-
 
       store.device1Pos = wgs84togcj02(
         parseFloat(pageData.currentData.longitude),
@@ -149,7 +148,6 @@ const test = () => {
       getEeditPlanExecute({
         deviceKey: '长空之王',
       }).then((res) => {
-        
         if (save !== res.data.data.planInfo) {
           store.device1Line = JSON.parse(res.data.data.planInfo);
           FavoriteRef.value.initMapFn();

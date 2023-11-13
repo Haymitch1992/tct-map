@@ -11,16 +11,21 @@
       ref="FavoriteRef"
     ></map-container>
     <div class="right-container">
-      <h3>航线编辑</h3>
-      <h4>航线列表</h4>
+      <h3>
+        航线列表
+        <el-button
+          size="small"
+          type="primary"
+          @click="createLine()"
+          class="create-btn"
+          >创建航线</el-button
+        >
+      </h3>
 
-      <el-button type="primary" @click="createLine()" class="create-btn"
-        >创建航线</el-button
-      >
       <!-- {{ pageData.lineList }} -->
       <el-table :data="pageData.lineList" border style="width: 100%">
-        <el-table-column prop="planName" label="航线名称" width="150" />
-        <el-table-column prop="planId" label="航线名称" width="50" />
+        <el-table-column prop="planName" label="航线名称" />
+        <!-- <el-table-column prop="planId" label="航线名称" width="50" /> -->
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button
@@ -38,6 +43,18 @@
           </template>
         </el-table-column>
       </el-table>
+      <div class="pagination-line">
+        <el-pagination
+          v-model:current-page="pageData.pageNum"
+          :page-size="pageData.pageSize"
+          :small="true"
+          :background="true"
+          layout="total, prev, pager, next"
+          :total="pageData.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
 
       <h4>航线名称</h4>
       <el-input v-model="pageData.planName" class="planName-line"></el-input>
@@ -47,7 +64,7 @@
         {{ store.device1Line }}
       </span> -->
       <el-button type="primary" @click="startSetLine()">编辑</el-button>
-      <el-button type="primary" @click="test()">结束编辑</el-button>
+      <el-button type="primary" @click="closeSetLine()">结束编辑</el-button>
 
       <el-button type="primary" v-if="pageData.planId" @click="editLine()"
         >更新</el-button
@@ -60,7 +77,7 @@
 </template>
 
 <script setup>
-import mapContainer from '../../components/mapContainer.vue';
+import mapContainer from '../../components/mapContainer3D.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import videoBox from '../../components/video.vue';
@@ -82,12 +99,15 @@ const pageData = reactive({
   planName: null,
   planId: null,
   planList: [],
+  pageSize: 5,
+  total: 0,
+  pageNum: 1,
 });
 const FavoriteRef = ref(null);
 const store = mainStore();
 // 获取数据
 
-const test = () => {
+const closeSetLine = () => {
   FavoriteRef.value.closeEdit();
 };
 const startSetLine = () => {
@@ -118,7 +138,7 @@ const createLine = () => {
 };
 
 const addLine = () => {
-  test();
+  closeSetLine();
   postAddPlanInfo({
     planName: pageData.planName,
     planInfo: JSON.stringify(store.device1Line),
@@ -131,7 +151,7 @@ const addLine = () => {
 // 更新航线
 
 const editLine = () => {
-  test();
+  closeSetLine();
   postEditPlanInfo({
     planName: pageData.planName,
     planId: pageData.planId,
@@ -160,14 +180,26 @@ const dellteLine = (id) => {
 };
 
 // 获取航线列表
+const handleSizeChange = (val) => {
+  console.log(`${val} items per page`);
+  pageData.pageSize = val;
+  getInfo();
+};
+
+const handleCurrentChange = (val) => {
+  console.log(`current page: ${val}`);
+  pageData.pageNume = val;
+  getInfo();
+};
 
 const getInfo = () => {
   postSelectListPlanInfo({
-    pageSize: 10,
-    pageNum: 1,
+    pageSize: pageData.pageSize,
+    pageNum: pageData.pageNum,
   }).then((res) => {
     console.log(res);
     pageData.lineList = res.data.data.list;
+    pageData.total = res.data.data.total;
     handleClick(pageData.lineList[0]);
   });
 
@@ -190,7 +222,7 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .create-btn {
-  margin-bottom: 12px;
+  float: right;
 }
 .planName-line {
   margin-bottom: 14px;
@@ -231,5 +263,8 @@ onMounted(() => {
   font-size: 14px;
   padding: 10px 6px;
   line-height: 30px;
+}
+.pagination-line {
+  padding: 10px 4px;
 }
 </style>

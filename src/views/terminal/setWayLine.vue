@@ -42,13 +42,13 @@
             <el-button
               size="small"
               type="warning"
-              @click="addflightinfo(scope.row.planId, '无人机')"
+              @click="addflightinfo(scope.row.planId, '无人机', 2)"
               >无人机</el-button
             >
             <el-button
               size="small"
               type="warning"
-              @click="addflightinfo(scope.row.planId, '长空之王')"
+              @click="addflightinfo(scope.row.planId, '长空之王', 1)"
               >长空之王</el-button
             >
           </template>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import mapContainer from '../../components/mapContainer.vue';
+import mapContainer from '../../components/mapContainer2D.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
 import videoBox from '../../components/video.vue';
@@ -97,10 +97,13 @@ const handleClick = (item) => {
 
 // 创建航线
 
-const addflightinfo = (planId, str) => {
+// 计划下达
+const addflightinfo = (planId, str, type) => {
   postAddPlanExecute({
     planId: planId,
     deviceKey: str,
+    deviceType: type, // 1有人机；2无人机
+    type: store.scene, //1真实；2仿真
     createTime: '2023-10-19 15:10:00',
     planStatus: 0,
   }).then((res) => {
@@ -120,47 +123,6 @@ const editflightinfo = (planId, str) => {
   }).then((res) => {
     ElMessage({
       message: '计划取消成功',
-      type: 'success',
-    });
-    getInfo();
-  });
-};
-
-const addLine = () => {
-  postAddPlanInfo({
-    planName: '航线名称',
-    planInfo: JSON.stringify(store.device1Line),
-  }).then((res) => {
-    console.log(res);
-    getInfo();
-  });
-};
-
-// 更新航线
-
-const editLine = () => {
-  postEditPlanInfo({
-    planName: pageData.planName,
-    planId: pageData.planId,
-    planInfo: JSON.stringify(store.device1Line),
-  }).then((res) => {
-    console.log(res);
-    ElMessage({
-      message: '航线更新成功',
-      type: 'success',
-    });
-    getInfo();
-  });
-};
-
-const dellteLine = (id) => {
-  postDeletePlanInfo({
-    planId: id,
-  }).then((res) => {
-    f;
-    console.log(res);
-    ElMessage({
-      message: '航线删除成功',
       type: 'success',
     });
     getInfo();
@@ -189,7 +151,6 @@ const getInfo = () => {
 
 onMounted(() => {
   getInfo();
-
 });
 // hang
 </script>

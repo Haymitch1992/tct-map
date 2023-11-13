@@ -1,15 +1,14 @@
+<!-- 2d平面地图 -->
 <script setup>
 import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
-import mapItem3 from './map-item-3.vue';
-import airImg1 from '../assets/直升机.png';
 import { mainStore } from '../store/index';
 
 const store = mainStore();
 window._AMapSecurityConfig = {
   securityJsCode: '7e5bc09f4481b57e427367314025db90',
 };
-//
+
 var path = store.device1Line;
 var polyEditor = null;
 console.log(path, 'path');
@@ -18,6 +17,8 @@ const showBtn = ref(true);
 var map = shallowRef(null);
 var heatmap = '';
 var dialogVisible2 = ref(false);
+
+
 const initMap = () => {
   AMapLoader.load({
     key: '2b22402984a62e37a7cf1854ceec05f1', // 申请好的Web端开发者Key，首次调用 load 时必填
@@ -30,6 +31,7 @@ const initMap = () => {
       'AMap.PolyEditor',
       'AMap.Icon',
       'AMap.Buildings',
+   
     ], // 需要使用的的插件列表，如比例尺'AMap.Scale'等
   })
     .then((AMap) => {
@@ -66,8 +68,8 @@ const initMap = () => {
         })
       );
 
-      // drawAir();
       drawLine();
+   
       // var polyEditor = new AMap.PolyEditor(map, polygon)
       // polyEditor = new AMap.PolygonEditor(map)
     })
@@ -75,6 +77,8 @@ const initMap = () => {
       console.log(e);
     });
 };
+
+
 
 const calcLine = (data) => {
   let arr = [];
@@ -123,42 +127,16 @@ const drawLine = (lineData) => {
   map.setFitView([polyline1]);
 };
 
-// 绘制三维
-
-const drawAir = () => {
-  map.plugin('AMap.Icon', function () {
-    var airIcon = new AMap.Icon({
-      // 图标尺寸
-      size: new AMap.Size(48, 48),
-      // 图标的取图地址
-      image: airImg1,
-      anchor: 'center',
-      // 图标所用图片大小
-      imageSize: new AMap.Size(48, 48),
-
-      // 图标取图偏移量
-    });
-    var airMarker = new AMap.Marker({
-      position: new AMap.LngLat(...store.device1Pos),
-      icon: airIcon,
-
-      offset: new AMap.Pixel(-24, -24),
-    });
-    map.add([airMarker]);
-  });
-};
-
 // 结束编辑
 
 const closeEdit = () => {
   polyEditor.close();
-  console.log('结束编辑');
 };
 
 const startEdit = () => {
   polyEditor.open();
-  console.log('结束编辑');
 };
+
 const initMapFn = () => {
   initMap();
 };
@@ -172,6 +150,7 @@ defineExpose({
   closeEdit,
   startEdit,
   initMapFn,
+
 });
 
 watch(
@@ -187,7 +166,6 @@ watch(
   () => store.device1Pos,
   (a) => {
     map.clearMap();
-    // drawAir();
     drawLine();
   },
   {

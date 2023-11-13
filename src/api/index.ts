@@ -60,10 +60,26 @@ export async function postFlightInfo(loginForm:any) {
     loginForm)
 }
 
-// export async function postFlightInfo(loginForm:any) { 
-//   return request('/api/emuairPlane/flightInfo', METHOD.POST,
-//     loginForm)
-// }
+// 获取任务列表
+export async function getSelectListTask(loginForm:any) { 
+  return request('/api/taskInfo/selectListTaskInfo', METHOD.GET,
+    loginForm)
+}
+// 创建任务
+
+export async function postAddTaskInfo(loginForm:any) { 
+  return request('/api/taskInfo/addTaskInfo', METHOD.POST,
+    loginForm)
+}
+
+// 编辑任务
+  
+export async function postEditTaskInfo(loginForm:any) { 
+  return request('/api/taskInfo/editTaskInfo', METHOD.POST,
+    loginForm)
+}
+
+
 
 
 // 新增任务下达
