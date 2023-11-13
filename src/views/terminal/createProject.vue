@@ -270,7 +270,7 @@ const createTask = () => {
       type: 'success',
     });
     getTask();
-    handleBlackTask()
+    handleBlackTask();
   });
 };
 
@@ -287,12 +287,12 @@ const editTask = () => {
     pageData.pageNum = 1;
     // 创建成功提示框
     ElMessage({
-      message: '任务创建成功',
+      message: '任务编辑成功',
       type: 'success',
     });
 
     getTask();
-    handleBlackTask()
+    handleBlackTask();
   });
 };
 
@@ -386,14 +386,6 @@ const pageData = reactive({
     },
   ],
   member: [
-    {
-      name: '张三',
-      role: '任务负责人',
-    },
-    {
-      name: '张三',
-      role: '无人机驾驶员',
-    },
     {
       name: '张三',
       role: '有人机驾驶员',

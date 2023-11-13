@@ -2,8 +2,8 @@
   <div class="box">websocket</div>
 </template>
 <script>
-// import { GETSTAIONINFO, GETTRAININFO } from '../services/user';
-// import { mapMutations } from 'vuex';
+import { mainStore } from '../store/index';
+const store = mainStore();
 const heartCheck = {
   timeout: 60 * 1000,
   timer: null,
@@ -17,7 +17,8 @@ const heartCheck = {
     this.timer = setTimeout(() => {
       // console.log('发送心跳,后端收到后，返回一个心跳消息')
       // onmessage拿到返回的心跳就说明连接正常
-      ws.send(JSON.stringify({ heart: 1 }));
+      ws.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
+      ws.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
       this.serverTimer = setTimeout(() => {
         // 如果超过一定时间还没响应(响应后触发重置)，说明后端断开了
         ws.close();
@@ -35,7 +36,7 @@ export default {
       // ws wssws:10.252.187.11:80
       //  wss:10.252.187.11:443
       // wsuri: 'wss://172.51.215.158:30082/api/v1/device/platform_ws/connection',
-      wsuri: 'ws://172.16.217.221:12125/websocket',
+      wsuri: 'ws://172.51.216.125:12125/websocket',
       lockReconnect: false, // 连接失败不进行重连
       maxReconnect: 5, // 最大重连次数，若连接失败
       socket: null,
@@ -82,19 +83,64 @@ export default {
     },
     websocketonmessage(e) {
       console.log(e.data);
-
-
+      let obj = JSON.parse(e.data);
+      console.log(obj, 'obj!!!!!!!!!!!!!');
       // console.log('可以渲染网页数据...');
       // 消息获取成功，重置心跳
       heartCheck.start(this.socket);
+      // 飞行器数据 类型1
+      if (obj.type === 1) {
+        switch (obj.data.deviceKey) {
+          case '有人机':
+            store.device1Pos = [
+              parseFloat(obj.data.longitude),
+              parseFloat(obj.data.latitude),
+            ];
+            store.altitude = obj.data.altitude;
+            break;
+          case '无人机':
+            store.device2Pos = [
+              parseFloat(obj.data.longitude),
+              parseFloat(obj.data.latitude),
+            ];
+            break;
+        }
+      }
+
+      // 航线信息 类型2
+      if (obj.type === 2) {
+        if (obj.code === 200) {
+          // 储存航线
+          switch (obj.data.deviceKey) {
+            case '有人机':
+              store.device1Line = JSON.parse(obj.data.planInfo);
+              break;
+            case '无人机':
+              store.device2Line = JSON.parse(obj.data.planInfo);
+              break;
+          }
+        } else if (obj.code === 40001) {
+          // 根据deviceKey 去清空对应航线
+          switch (obj.data) {
+            case '有人机':
+              store.device1Line = [];
+              break;
+            case '无人机':
+              store.device2Line = [];
+              break;
+          }
+        }
+        // store.device1Line = JSON.parse(res.data.data.planInfo);
+      }
     },
     websocketclose(e) {
       console.log('connection closed (' + e.code + ')');
       this.reconnect();
     },
     websocketsend() {
-      let data = { id: 'start' };
+      let data = { deviceKey: '无人机', type: 2 };
       this.socket.send(JSON.stringify(data));
+      this.socket.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
     },
   },
   unmounted() {

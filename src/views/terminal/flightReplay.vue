@@ -12,6 +12,7 @@
     ></map-container>
     <div class="right-container">
       <h3>飞行监视</h3>
+
       <!-- <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
       <el-button type="primary" @click="test()">保存航线</el-button> -->
 
@@ -39,6 +40,7 @@
       <h4>飞行器感知画面</h4>
       <video-box></video-box>
     </div>
+    <socket></socket>
   </div>
 </template>
 
@@ -51,6 +53,7 @@ import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getEeditPlanExecute, postFlightInfoGround } from '../../api/index.ts';
 import { wgs84togcj02 } from '../../vendors/coordtransform.js';
+import socket from '../../components/socket.vue';
 
 const FavoriteRef = ref(null);
 const store = mainStore();
@@ -158,12 +161,10 @@ const test = () => {
   });
 };
 onMounted(() => {
-  // store.device1Pos = [116.316062, 39.828417];
-  test();
+
 });
 onUnmounted(() => {
-  clearInterval(timer);
-  clearInterval(timer2);
+
 });
 </script>
 

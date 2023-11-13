@@ -9,9 +9,9 @@ export const mainStore = defineStore('main', {
     // 定义状态
     return {
       device1Pos:[116.326755, 39.788338],// 有人机 实时位置
-      device1Line: [[116.326755, 39.788338], [116.33287, 39.798175]],// 有人机 航线
+      device1Line: [],// 有人机 航线
       device2Pos:[116.316062, 39.828417], // 无人机 实时位置
-      device2Line: [[116.326755, 39.788338], [116.33287, 39.798175]], // 无人机 航线
+      device2Line: [], // 无人机 航线
       altitude: 0, // 有人机 高度
       headingAngle: 0, // 有人机偏转角度
       scene: 2,// 场景1 单个飞机  场景2 有人机和无人机 

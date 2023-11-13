@@ -133,15 +133,6 @@ const initMap = () => {
 
           mouseTool.close(true);
         }
-        // let arr = returnLinePath(event.obj.getPath());
-        // drawTaskArea(event.obj.getPath());
-        // console.log(arr, '获得路径');
-
-        // 关闭当前鼠标操作
-
-        // 隐藏多边形
-
-        // 存储对象
       });
 
       if (props.view3D) {
@@ -170,6 +161,8 @@ const initMap = () => {
 };
 
 const drawLine = () => {
+  //
+  console.log('执行drawLine');
   var polyline1 = new AMap.Polyline({
     path: store.device1Line,
     strokeWeight: 6,
@@ -359,13 +352,16 @@ const airList = reactive({
 
 // 绘制辅助线
 
+var drawSubLineLayer = null;
 const drawSubLine = () => {
+  console.log(drawSubLine);
   if (!store.device1Line) return;
-  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
-  map.add(object3Dlayer);
+  drawSubLineLayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+  map.add(drawSubLineLayer);
   var lines = new AMap.Object3D.Line();
   var lineGeo = lines.geometry;
-  var path = store.device1Line;
+  let path = JSON.parse(JSON.stringify(store.device1Line));
+
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
@@ -392,18 +388,19 @@ const drawSubLine = () => {
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
 
-  object3Dlayer.add(lines);
-  object3Dlayer.add(points3D);
+  drawSubLineLayer.add(lines);
+  drawSubLineLayer.add(points3D);
 };
 
+var drawSubLineLayer2 = null;
 const drawSubLine2 = () => {
   if (!store.device2Line) return;
-  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
-  map.add(object3Dlayer);
+  drawSubLineLayer2 = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+  map.add(drawSubLineLayer2);
 
   var lines = new AMap.Object3D.Line();
   var lineGeo = lines.geometry;
-  var path = store.device2Line;
+  let path = JSON.parse(JSON.stringify(store.device2Line));
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
@@ -430,8 +427,8 @@ const drawSubLine2 = () => {
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
 
-  object3Dlayer.add(lines);
-  object3Dlayer.add(points3D);
+  drawSubLineLayer2.add(lines);
+  drawSubLineLayer2.add(points3D);
 };
 // 绘制遮挡物
 
@@ -533,40 +530,44 @@ const drawReact = () => {
   addBox([...store.barrierPos], ...store.barrierStyle);
 };
 // 绘制三维路线
+var draw3dLineLayer = null; // 图层
 
 const draw3dLine = () => {
   if (!store.device1Line) return;
   map.plugin(['Map3D'], function () {
-    var object3Dlayer = new AMap.Object3DLayer();
+    draw3dLineLayer = new AMap.Object3DLayer();
+    let path = JSON.parse(JSON.stringify(store.device1Line));
     var meshLine = new AMap.Object3D.MeshLine({
-      path: store.device1Line,
+      path: path,
       height: [1000, 1000, 1000, 1000, 1000, 1000],
       color: 'rgba(55,129,240, 0.9)',
       width: 6,
     });
 
     meshLine.transparent = true;
-    object3Dlayer.add(meshLine);
+    draw3dLineLayer.add(meshLine);
     meshLine['backOrFront'] = 'both';
-    map.add(object3Dlayer);
+    map.add(draw3dLineLayer);
     map.setCenter([...store.device1Pos]);
   });
 };
+var draw3dLineLayer2 = null;
 const draw3dLine2 = () => {
   if (!store.device2Line) return;
   map.plugin(['Map3D'], function () {
-    var object3Dlayer = new AMap.Object3DLayer();
+    draw3dLineLayer2 = new AMap.Object3DLayer();
+    let path = JSON.parse(JSON.stringify(store.device2Line));
     var meshLine = new AMap.Object3D.MeshLine({
-      path: store.device2Line,
+      path: path,
       height: [1000, 1000, 1000, 1000, 1000, 1000],
       color: 'rgba(155,129,240, 0.9)',
       width: 6,
     });
 
     meshLine.transparent = true;
-    object3Dlayer.add(meshLine);
+    draw3dLineLayer2.add(meshLine);
     meshLine['backOrFront'] = 'both';
-    map.add(object3Dlayer);
+    map.add(draw3dLineLayer2);
   });
 };
 const pointOnCubicBezier = (cp, t) => {
@@ -799,17 +800,60 @@ defineExpose({
 watch(
   () => store.device1Line,
   (data) => {
-    if (store.device1Line) {
-      if (props.view3D) {
-        initMap();
+    //  绘制有人机航线
+    if (props.view3D) {
+      console.log('执行store.device1Line');
+      if (draw3dLineLayer) {
+        map.remove(draw3dLineLayer);
       }
-      
+      if (draw3dLineLayer2) {
+        map.remove(draw3dLineLayer2);
+      }
+      if (drawSubLineLayer) {
+        map.remove(drawSubLineLayer);
+      }
+      if (drawSubLineLayer2) {
+        map.remove(drawSubLineLayer2);
+      }
+      draw3dLine();
+      draw3dLine2();
+      drawSubLine();
+      drawSubLine2();
     }
   },
   {
     deep: true,
   }
 );
+
+watch(
+  () => store.device2Line,
+  (data) => {
+    //  绘制有人机航线
+    if (props.view3D) {
+      if (draw3dLineLayer) {
+        map.remove(draw3dLineLayer);
+      }
+      if (draw3dLineLayer2) {
+        map.remove(draw3dLineLayer2);
+      }
+      if (drawSubLineLayer) {
+        map.remove(drawSubLineLayer);
+      }
+      if (drawSubLineLayer2) {
+        map.remove(drawSubLineLayer2);
+      }
+      draw3dLine();
+      draw3dLine2();
+      drawSubLine();
+      drawSubLine2();
+    }
+  },
+  {
+    deep: true,
+  }
+);
+
 watch(
   () => store.device1Pos,
   (a) => {
