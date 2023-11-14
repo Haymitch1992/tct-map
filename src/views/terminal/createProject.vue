@@ -5,6 +5,8 @@
     <map-container
       :showAir="false"
       :showLine2="false"
+      :view3D="true"
+      :uesMouseTool="true"
       ref="FavoriteRef"
       class="map-container"
     ></map-container>
@@ -257,7 +259,6 @@ const createTask = () => {
   postAddTaskInfo({
     ...formLabelAlign,
     fireRange: '123',
-
     centerPoint: JSON.stringify(store.centerPoint),
     taskArea: JSON.stringify(store.area),
     member: JSON.stringify(pageData.member),

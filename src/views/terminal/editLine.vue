@@ -118,9 +118,7 @@ const handleClick = (item) => {
   pageData.planName = item.planName;
   store.device1Line = JSON.parse(item.planInfo);
   pageData.planId = item.planId;
-  setTimeout(() => {
-    FavoriteRef.value.initMapFn();
-  }, 1000);
+  FavoriteRef.value.initMapFn();
 };
 
 // 创建航线

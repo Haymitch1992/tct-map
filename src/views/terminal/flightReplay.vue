@@ -38,7 +38,7 @@
       </span>
 
       <h4>飞行器感知画面</h4>
-      <video-box></video-box>
+      <!-- <video-box></video-box> -->
     </div>
     <socket></socket>
   </div>
@@ -160,12 +160,8 @@ const test = () => {
     }, 1000);
   });
 };
-onMounted(() => {
-
-});
-onUnmounted(() => {
-
-});
+onMounted(() => {});
+onUnmounted(() => {});
 </script>
 
 <style lang="less" scoped>

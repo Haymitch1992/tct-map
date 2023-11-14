@@ -1,9 +1,13 @@
 <!-- 3d平面地图 -->
 <script setup>
-import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
+import { onMounted, onUnmounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import { mainStore } from '../store/index';
 import { ElMessage } from 'element-plus';
+
+// 飞行器图层
+var airPointLayer2 = null;
+var airPointLayer = null;
 
 const props = defineProps({
   showAir: {
@@ -21,7 +25,14 @@ const props = defineProps({
     required: true,
     default: false,
   },
+  uesMouseTool: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
+
+var Map3DPluginInit = false;
 
 const store = mainStore();
 window._AMapSecurityConfig = {
@@ -106,52 +117,58 @@ const initMap = () => {
         fillColor: '#ee2200', //填充颜色
         fillOpacity: 0.8, //填充透明度
       });
-      mouseTool = new AMap.MouseTool(map);
-      // mouseToolMark = new AMap.MouseTool(map);
 
-      mouseTool.on('draw', function (event) {
-        console.log(event, event.obj); //获取路径/范围
-        // event.obj 为绘制出来的覆盖物对象
-        if (event.obj.CLASS_NAME == 'AMap.Polygon') {
-          // store.centerPoint = [];
-          store.area = [event.obj.getPath()];
+      if (props.uesMouseTool) {
+        // 是否提供鼠标绘制工具
+        mouseTool = new AMap.MouseTool(map);
+        mouseTool.on('draw', function (event) {
+          // event.obj 为绘制出来的覆盖物对象
+          if (event.obj.CLASS_NAME == 'AMap.Polygon') {
+            store.area = [event.obj.getPath()];
+            mouseTool.close(true);
+            ElMessage({
+              message: '任务区域绘制完成',
+              type: 'success',
+            });
+          }
 
-          mouseTool.close(true);
-          ElMessage({
-            message: '任务区域绘制完成',
-            type: 'success',
-          });
-        }
-
-        if (event.obj.CLASS_NAME == 'AMap.Marker') {
-          ElMessage({
-            message: '中心点绘制完成',
-            type: 'success',
-          });
-          // store.area = [];
-          store.centerPoint = [event.obj.getPosition()];
-
-          mouseTool.close(true);
-        }
+          if (event.obj.CLASS_NAME == 'AMap.Marker') {
+            ElMessage({
+              message: '中心点绘制完成',
+              type: 'success',
+            });
+            store.centerPoint = [event.obj.getPosition()];
+            mouseTool.close(true);
+          }
+        });
+      }
+      //
+      map.plugin(['Map3D'], function () {
+        // 插件加载成功
+        Map3DPluginInit = true;
       });
+
+      airPointLayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+      map.add(airPointLayer);
+      airPointLayer2 = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+      map.add(airPointLayer2);
 
       if (props.view3D) {
         // 显示三维视图
-        if (props.showAir) {
-          draw3dPoint2();
-          draw3dPoint3();
-        }
-        if (props.showLine2) {
-          draw3dLine2();
-          drawSubLine2();
-        }
-        // 创建楼快
-        draw3dLine();
-        drawSubLine();
+        // if (props.showAir) {
+        //   draw3dPoint2();
+        //   draw3dPoint3();
+        // }
+        // if (props.showLine2) {
+        //   draw3dLine2();
+        //   drawSubLine2();
+        // }
+        // // 创建楼快
+        // draw3dLine();
+        // drawSubLine();
       } else {
         drawLine();
       }
-
       drawReact();
       drawAirport();
     })
@@ -161,8 +178,8 @@ const initMap = () => {
 };
 
 const drawLine = () => {
+  console.log('绘制线', props.view3D);
   //
-  console.log('执行drawLine');
   var polyline1 = new AMap.Polyline({
     path: store.device1Line,
     strokeWeight: 6,
@@ -189,7 +206,7 @@ const drawLine = () => {
   });
   // polyEditor.open();
   map.add([polyline1]);
-  map.setFitView([polyline1]);
+  map.setFitView();
 };
 
 // 绘制任务范围
@@ -672,12 +689,8 @@ const draw3dPoint = () => {
   object3Dlayer.add(points3D);
 };
 
-let saveLines = null;
-let savepoints3D = null;
 const draw3dPoint2 = () => {
   if (!store.device1Pos) return;
-  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
-  map.add(object3Dlayer);
 
   var lines = new AMap.Object3D.Line();
   var lineGeo = lines.geometry;
@@ -707,16 +720,12 @@ const draw3dPoint2 = () => {
 
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
-  saveLines = lines;
-  savepoints3D = points3D;
-  object3Dlayer.add(lines);
-  object3Dlayer.add(points3D);
+
+  airPointLayer2.add(lines);
+  airPointLayer2.add(points3D);
 };
 const draw3dPoint3 = () => {
   if (!store.device2Pos) return;
-  var object3Dlayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
-  map.add(object3Dlayer);
-
   var lines = new AMap.Object3D.Line();
   var lineGeo = lines.geometry;
   var path = [store.device2Pos];
@@ -745,10 +754,9 @@ const draw3dPoint3 = () => {
 
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
-  saveLines = lines;
-  savepoints3D = points3D;
-  object3Dlayer.add(lines);
-  object3Dlayer.add(points3D);
+
+  airPointLayer.add(lines);
+  airPointLayer.add(points3D);
 };
 // 结束编辑
 
@@ -763,6 +771,11 @@ const startEdit = () => {
 };
 onMounted(() => {
   initMap();
+});
+onUnmounted(() => {
+  // 销毁地图
+  console.log('销毁地图');
+  map.destroy();
 });
 const count = ref(0);
 
@@ -801,7 +814,7 @@ watch(
   () => store.device1Line,
   (data) => {
     //  绘制有人机航线
-    if (props.view3D) {
+    if (props.view3D && Map3DPluginInit) {
       console.log('执行store.device1Line');
       if (draw3dLineLayer) {
         map.remove(draw3dLineLayer);
@@ -830,7 +843,7 @@ watch(
   () => store.device2Line,
   (data) => {
     //  绘制有人机航线
-    if (props.view3D) {
+    if (props.view3D && Map3DPluginInit) {
       if (draw3dLineLayer) {
         map.remove(draw3dLineLayer);
       }
@@ -857,9 +870,8 @@ watch(
 watch(
   () => store.device1Pos,
   (a) => {
-    if (store.device1Pos) {
+    if (store.device1Pos && Map3DPluginInit) {
       draw3dPoint2();
-      drawLine();
     }
   },
   {
@@ -869,7 +881,7 @@ watch(
 watch(
   () => store.device2Pos,
   (a) => {
-    if (store.device2Pos) {
+    if (store.device2Pos && Map3DPluginInit) {
       draw3dPoint3();
     }
   },
