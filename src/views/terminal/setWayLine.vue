@@ -32,6 +32,7 @@
           /> -->
           <el-table-column prop="executeName" label="计划名称" width="100" />
           <el-table-column prop="planStatus" label="planStatus" width="40" />
+          <el-table-column prop="planId" label="planId" width="40" />
           <el-table-column fixed="right" label="操作">
             <template #default="scope">
               <el-button

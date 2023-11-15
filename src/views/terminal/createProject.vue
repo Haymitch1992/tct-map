@@ -5,6 +5,7 @@
     <map-container
       :showAir="false"
       :showLine2="false"
+      :view3D="false"
       :uesMouseTool="true"
       ref="FavoriteRef"
       class="map-container"

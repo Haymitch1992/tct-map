@@ -116,16 +116,18 @@ export default {
               store.device2Line = JSON.parse(obj.data.planInfo);
               break;
           }
-        } else if (obj.code === 40001) {
-          // 根据deviceKey 去清空对应航线
-          switch (obj.data) {
-            case '有人机':
-              store.device1Line = [];
-              break;
-            case '无人机':
-              store.device2Line = [];
-              break;
-          }
+        }
+      }
+
+      if (obj.type === 0 && obj.code === 40001) {
+        // 根据deviceKey 去清空对应航线
+        switch (obj.data) {
+          case '有人机':
+            store.device1Line = [];
+            break;
+          case '无人机':
+            store.device2Line = [];
+            break;
         }
       }
     },

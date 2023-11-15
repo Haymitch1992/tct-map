@@ -82,7 +82,7 @@ const initMap = () => {
         viewMode: '3D', //是否为3D地图模式
         pitch: 60,
         showBuildingBlock: false,
-        zoom: 15.8, //初始化地图级别
+        zoom: 13.8, //初始化地图级别
         terrain: true,
         center: [...store.device1Pos],
         // center: [116.326755, 39.788338], //初始化地图中心点位置
@@ -285,20 +285,58 @@ const drawAirport = () => {
       fillOpacity: 0.4, //填充透明度
     });
 
-    var polygon = new AMap.Polygon({
-      path: returnLinePath(store.fireRange[0]),
-      strokeColor: '#F00',
-      strokeWeight: 6,
-      strokeOpacity: 0.2,
-      fillOpacity: 0.4,
-      fillColor: '#aa0000',
-      zIndex: 50,
-    });
-
-    map.add(polygon);
     map.add(text);
     map.add(circle);
   });
+};
+
+var fireLayer = null;
+var fireArea = null;
+// 绘制火苗
+const drawFire = () => {
+  var icon = {
+    // 图标类型，现阶段只支持 image 类型
+    type: 'image',
+    // 图片 url
+    image: '/public/火苗.png',
+    // 图片尺寸
+    size: [48, 48],
+    // 图片相对 position 的锚点，默认为 bottom-center
+    anchor: 'center',
+  };
+  // 创建火苗图层
+  fireLayer = new AMap.LabelsLayer({
+    zooms: [3, 20],
+    zIndex: 1000,
+  });
+  let markerList = [
+    [115.986918, 39.884053],
+    [115.979593, 39.875295],
+  ];
+  let markers = [];
+  markerList.forEach((item) => {
+    var labelMarker = new AMap.LabelMarker({
+      position: item,
+      icon,
+    });
+
+    markers.push(labelMarker);
+  });
+
+  fireArea = new AMap.Polygon({
+    path: returnLinePath(store.fireRange[0]),
+    strokeColor: '#F00',
+    strokeWeight: 6,
+    strokeOpacity: 0.2,
+    fillOpacity: 0.4,
+    fillColor: '#aa0000',
+    zIndex: 50,
+  });
+
+  fireLayer.add(markers);
+  map.add(fireLayer);
+  map.add(fireArea);
+  // 获取火苗坐标
 };
 
 // 编辑任务范围
@@ -374,7 +412,7 @@ const airList = reactive({
 var drawSubLineLayer = null;
 const drawSubLine = () => {
   console.log(drawSubLine);
-  if (!store.device1Line) return;
+  if (store.device1Line.length === 0) return;
   drawSubLineLayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
   map.add(drawSubLineLayer);
   var lines = new AMap.Object3D.Line();
@@ -413,7 +451,7 @@ const drawSubLine = () => {
 
 var drawSubLineLayer2 = null;
 const drawSubLine2 = () => {
-  if (!store.device2Line) return;
+  if (store.device2Line.length === 0) return;
   drawSubLineLayer2 = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
   map.add(drawSubLineLayer2);
 
@@ -552,7 +590,7 @@ const drawReact = () => {
 var draw3dLineLayer = null; // 图层
 
 const draw3dLine = () => {
-  if (!store.device1Line) return;
+  if (store.device1Line.length === 0) return;
   map.plugin(['Map3D'], function () {
     draw3dLineLayer = new AMap.Object3DLayer();
     let path = JSON.parse(JSON.stringify(store.device1Line));
@@ -572,7 +610,7 @@ const draw3dLine = () => {
 };
 var draw3dLineLayer2 = null;
 const draw3dLine2 = () => {
-  if (!store.device2Line) return;
+  if (store.device2Line.length === 0) return;
   map.plugin(['Map3D'], function () {
     draw3dLineLayer2 = new AMap.Object3DLayer();
     let path = JSON.parse(JSON.stringify(store.device2Line));
@@ -783,13 +821,12 @@ const count = ref(0);
 
 // 显示火灾
 const showWarning = () => {
-  map.add(circle);
-  map.setFitView();
+  drawFire();
 };
 // 隐藏火灾
 const hideWarning = () => {
-  map.remove(circle);
-  map.setFitView();
+  map.remove(fireLayer);
+  map.remove(fireArea);
 };
 
 const setFitViewFn = () => {
@@ -817,23 +854,26 @@ watch(
   (data) => {
     //  绘制有人机航线
     if (props.view3D && Map3DPluginInit) {
-      console.log('执行store.device1Line');
       if (draw3dLineLayer) {
         map.remove(draw3dLineLayer);
       }
-      if (draw3dLineLayer2) {
-        map.remove(draw3dLineLayer2);
-      }
+
       if (drawSubLineLayer) {
         map.remove(drawSubLineLayer);
       }
-      if (drawSubLineLayer2) {
-        map.remove(drawSubLineLayer2);
-      }
+
+      // if (draw3dLineLayer2) {
+      //   map.remove(draw3dLineLayer2);
+      // }
+      // if (drawSubLineLayer2) {
+      //   map.remove(drawSubLineLayer2);
+      // }
       draw3dLine();
-      draw3dLine2();
+
       drawSubLine();
-      drawSubLine2();
+
+      // draw3dLine2();
+      // drawSubLine2();
     }
   },
   {
@@ -846,21 +886,24 @@ watch(
   (data) => {
     //  绘制有人机航线
     if (props.view3D && Map3DPluginInit) {
-      if (draw3dLineLayer) {
-        map.remove(draw3dLineLayer);
-      }
+      // if (draw3dLineLayer) {
+      //   map.remove(draw3dLineLayer);
+      // }
+      // if (drawSubLineLayer) {
+      //   map.remove(drawSubLineLayer);
+      // }
+
       if (draw3dLineLayer2) {
         map.remove(draw3dLineLayer2);
       }
-      if (drawSubLineLayer) {
-        map.remove(drawSubLineLayer);
-      }
+
       if (drawSubLineLayer2) {
         map.remove(drawSubLineLayer2);
       }
-      draw3dLine();
+      // draw3dLine();
+      // drawSubLine();
+
       draw3dLine2();
-      drawSubLine();
       drawSubLine2();
     }
   },

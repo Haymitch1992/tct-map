@@ -30,17 +30,21 @@
         >纬度 {{ store.device1Pos[1] }}°</el-tag
       >
       <el-tag size="small" type="success">海拔 {{ store.altitude }}m</el-tag>
+      <h4>有人机坐标</h4>
       <span class="data-text">
         {{ store.device1Pos }}
       </span>
-      <span>
+      <h4>无人机坐标</h4>
+      <span class="data-text">
         {{ store.device2Pos }}
       </span>
 
-      <span>
+      <h4>有人机航线 蓝色航线</h4>
+      <span class="data-text">
         {{ store.device1Line }}
       </span>
-      <span>
+      <h4>无人机航线 紫色航线</h4>
+      <span class="data-text">
         {{ store.device2Line }}
       </span>
       <h4>飞行器感知画面</h4>

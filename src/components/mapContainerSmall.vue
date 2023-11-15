@@ -77,18 +77,34 @@ const airList = reactive({
 });
 
 const drawLine = (lineData) => {
-  var polyline1 = new AMap.Polyline({
-    path: store.device1Line,
-    strokeWeight: 6,
-    strokeOpacity: 0.9,
-    zIndex: 50,
-    showDir: true,
-    bubble: true,
-    dirColor: 'pink',
-    strokeColor: '#3366cc', // 线颜色
-    strokeWeight: 10,
-  });
-
+  if (store.device1Line.length !== 0) {
+    var polyline1 = new AMap.Polyline({
+      path: store.device1Line,
+      strokeWeight: 6,
+      strokeOpacity: 0.9,
+      zIndex: 50,
+      showDir: true,
+      bubble: true,
+      dirColor: 'pink',
+      strokeColor: '#3366cc', // 线颜色
+      strokeWeight: 10,
+    });
+    map.add([polyline1]);
+  }
+  if (store.device2Line.length !== 0) {
+    var polyline2 = new AMap.Polyline({
+      path: store.device2Line,
+      strokeWeight: 6,
+      strokeOpacity: 0.9,
+      zIndex: 50,
+      showDir: true,
+      bubble: true,
+      dirColor: 'pink',
+      strokeColor: 'rgba(155,129,240, 0.9)', // 线颜色
+      strokeWeight: 10,
+    });
+    map.add([polyline2]);
+  }
   // polyEditor = new AMap.PolylineEditor(map, polyline1);
 
   // polyEditor.setTarget(polyline1);
@@ -101,7 +117,6 @@ const drawLine = (lineData) => {
   //   calcLine(path);
   // });
   // polyEditor.open();
-  map.add([polyline1]);
 };
 
 let saveAir = null;
@@ -184,6 +199,17 @@ watch(
     deep: true,
   }
 );
+
+watch(
+  () => store.device2Line,
+  (data) => {
+    initMap();
+  },
+  {
+    deep: true,
+  }
+);
+
 watch(
   () => store.device1Pos,
   (a) => {
@@ -209,6 +235,8 @@ watch(
     deep: true,
   }
 );
+
+// 监听火情变化 绘制火情 
 
 //
 </script>
