@@ -169,6 +169,8 @@ const initMap = () => {
       } else {
         drawLine();
       }
+      // drawTaskArea(store.area);
+      // drawCenterPoint(store.centerPoint);
       drawReact();
       drawAirport();
     })
@@ -893,11 +895,13 @@ watch(
 watch(
   () => store.area,
   (a) => {
+    if (Map3DPluginInit) {
+      map.clearMap();
+      drawTaskArea(store.area);
+      drawCenterPoint(store.centerPoint);
+      drawAirport();
+    }
     // 绘制范围
-    map.clearMap();
-    drawTaskArea(store.area);
-    drawCenterPoint(store.centerPoint);
-    drawAirport();
   },
   {
     deep: true,

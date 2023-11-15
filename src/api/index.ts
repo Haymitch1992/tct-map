@@ -80,6 +80,11 @@ export async function postEditTaskInfo(loginForm:any) {
 }
 
 
+export async function postdynamicPlanExecute(loginForm:any) { 
+  return request('/api/planExecute/dynamicPlanExecute', METHOD.POST,
+    loginForm)
+}
+
 
 
 // 新增任务下达

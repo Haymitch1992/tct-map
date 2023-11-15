@@ -6,30 +6,156 @@
     <map-container
       :showAir="false"
       :showLine2="false"
+      :view3D="true"
       class="map-container"
       ref="FavoriteRef"
     ></map-container>
     <div class="right-container">
-      <h3>航线设置</h3>
-      <h4>飞行计划列表</h4>
-      <el-table :data="pageData.planList" border style="width: 100%">
-        <el-table-column prop="deviceKey" label="飞行器" width="100" />
-        <el-table-column prop="planId" label="航线ID" width="100" />
-        <el-table-column fixed="right" label="操作">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="warning"
-              v-if="scope.row.planStatus === 0"
-              @click="editflightinfo(scope.row.planId, scope.row.deviceKey)"
-              >取消</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
+      <!--  -->
 
-      <h4>航线列表</h4>
-      <el-table :data="pageData.lineList" border style="width: 100%">
+      <div v-if="pageData.stataus === 1">
+        <h3>
+          飞行计划库
+          <el-button
+            size="small"
+            type="primary"
+            @click="handleCreateTask"
+            class="back-btn"
+            >创建计划</el-button
+          >
+        </h3>
+        <el-table :data="pageData.planList" border style="width: 100%">
+          <!-- <el-table-column
+            prop="executeTime"
+            label="计划/实际时间"
+            width="100"
+          /> -->
+          <el-table-column prop="executeName" label="计划名称" width="100" />
+          <el-table-column prop="planStatus" label="planStatus" width="40" />
+          <el-table-column fixed="right" label="操作">
+            <template #default="scope">
+              <el-button
+                size="small"
+                type="warning"
+                @click="editflightinfo(scope.row, 1)"
+                >下达</el-button
+              >
+              <el-button
+                size="small"
+                type="warning"
+                @click="handleDynamicPlanExecute(scope.row)"
+                >放飞</el-button
+              >
+              <el-button
+                size="small"
+                type="warning"
+                @click="editflightinfo(scope.row, 3)"
+                >取消</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div v-if="pageData.stataus === 2">
+        <h3>创建计划</h3>
+        <el-form
+          label-position="top"
+          label-width="100px"
+          :model="formLabelAlign"
+          style="max-width: 460px"
+        >
+          <el-form-item label="计划名称">
+            <el-input
+              v-model="formLabelAlign.executeName"
+              placeholder="请输入计划名称"
+            />
+          </el-form-item>
+
+          <el-form-item label="执行时间">
+            <el-date-picker
+              v-model="formLabelAlign.executeTime"
+              format="YYYY/MM/DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              type="datetime"
+              placeholder="请选择发生时间"
+            />
+          </el-form-item>
+          <el-form-item label="执行航线">
+            <!-- 事件类型 -->
+            <el-select
+              v-model="formLabelAlign.planId"
+              @change="handleClick(item)"
+              placeholder="请选择执行航线"
+            >
+              <el-option
+                v-for="item in pageData.lineList"
+                :key="item.type"
+                :label="item.planName"
+                :value="item.planId"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="执行飞行器">
+            <!-- 事件类型 -->
+            <el-select
+              v-model="formLabelAlign.deviceKey"
+              placeholder="请选择执行飞行器"
+            >
+              <el-option
+                v-for="item in pageData.devices"
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="任务策略">
+            <!-- 事件类型 -->
+            <el-select
+              v-model="formLabelAlign.strategy"
+              placeholder="请选择任务策略"
+            >
+              <el-option
+                v-for="item in pageData.strategyList"
+                :key="item.name"
+                :label="item.name"
+                :value="item.role"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="返航模式">
+            <!-- 事件类型 -->
+            <el-select
+              v-model="formLabelAlign.courseReversal"
+              placeholder="请选择返航模式"
+            >
+              <el-option
+                v-for="item in pageData.courseReversalList"
+                :key="item.name"
+                :label="item.name"
+                :value="item.role"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="航线飞行中失联">
+            <!-- 事件类型 -->
+            <el-select
+              v-model="formLabelAlign.executAuto"
+              placeholder="请选择返航模式"
+            >
+              <el-option
+                v-for="item in pageData.executAutoList"
+                :key="item.name"
+                :label="item.name"
+                :value="item.role"
+              />
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-button @click="addflightinfo" type="primary">保存</el-button>
+      </div>
+
+      <!-- <el-table :data="pageData.lineList" border style="width: 100%">
         <el-table-column prop="planName" label="航线ID" width="100" />
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
@@ -53,7 +179,7 @@
             >
           </template>
         </el-table-column>
-      </el-table>
+      </el-table> -->
     </div>
   </div>
 </template>
@@ -74,55 +200,136 @@ import {
   postAddPlanExecute,
   postEeditPlanExecute,
   getSelectListPlanExecute,
+  postdynamicPlanExecute,
 } from '../../api/index.ts';
 
+const handleCreateTask = () => {
+  pageData.stataus = 2;
+};
+const formLabelAlign = reactive({
+  //
+  planId: '',
+  deviceKey: '',
+  planStatus: '',
+  executeTime: '',
+  strategy: 1,
+  courseReversal: 1,
+  executAuto: 1,
+  executeName: '',
+});
 const pageData = reactive({
   lineList: [],
   planName: null,
   planId: null,
+  stataus: 1,
   planList: [],
+  devices: [
+    {
+      name: '无人机',
+      role: '大疆RT30',
+    },
+    {
+      name: '有人机',
+      role: '大疆RT30K',
+    },
+  ],
+  strategyList: [
+    {
+      name: '立即',
+      role: 1,
+    },
+    {
+      name: '单次定时',
+      role: 2,
+    },
+    {
+      name: '重复定时',
+      role: 3,
+    },
+    {
+      name: '持续执行',
+      role: 4,
+    },
+  ],
+  courseReversalList: [
+    {
+      name: '设定高度返航',
+      role: 1,
+    },
+    {
+      name: '智能高度返航',
+      role: 2,
+    },
+  ],
+  executAutoList: [
+    {
+      name: '返航',
+      role: 1,
+    },
+    {
+      name: '继续执行',
+      role: 2,
+    },
+  ],
 });
 const FavoriteRef = ref(null);
 const store = mainStore();
 // 获取数据
 
 const handleClick = (item) => {
-  pageData.planName = item.planName;
-  store.device1Line = JSON.parse(item.planInfo);
-  pageData.planId = item.planId;
-  setTimeout(() => {
-    FavoriteRef.value.initMapFn();
-  }, 1000);
+  //
+  pageData.lineList.forEach((item) => {
+    if (item.planId === formLabelAlign.planId) {
+      store.device1Line = JSON.parse(item.planInfo);
+      FavoriteRef.value.initMapFn();
+    }
+  });
+  // pageData.planName = item.planName;
+
+  // pageData.planId = item.planId;
 };
 
 // 创建航线
+//
+const handleDynamicPlanExecute = (item) => {
+  postdynamicPlanExecute({
+    planId: item.planId,
+    deviceKey: item.deviceKey,
+    id: item.id,
+    planStatus: 2,
+  }).then((res) => {
+    ElMessage({
+      message: '放飞成功',
+      type: 'success',
+    });
+  });
+};
 
 // 计划下达
-const addflightinfo = (planId, str, type) => {
+const addflightinfo = () => {
   postAddPlanExecute({
-    planId: planId,
-    deviceKey: str,
-    deviceType: type, // 1有人机；2无人机
-    type: store.scene, //1真实；2仿真
-    createTime: '2023-10-19 15:10:00',
+    ...formLabelAlign,
     planStatus: 0,
   }).then((res) => {
     ElMessage({
-      message: '计划下达成功',
+      message: '计划创建成功',
       type: 'success',
     });
+    pageData.stataus = 1;
     getInfo();
   });
 };
 
-const editflightinfo = (planId, str) => {
+const editflightinfo = (item, type) => {
   postEeditPlanExecute({
-    planId: planId,
-    deviceKey: str,
-    planStatus: 2,
+    planId: item.planId,
+    deviceKey: item.deviceKey,
+    id: item.id,
+    planStatus: type,
+    //planStatus: 2, //  0:未执行、1:已下发，待放飞、2:执行中、3:已执行完毕
   }).then((res) => {
     ElMessage({
-      message: '计划取消成功',
+      message: '计划下达成功',
       type: 'success',
     });
     getInfo();
@@ -133,16 +340,16 @@ const editflightinfo = (planId, str) => {
 
 const getInfo = () => {
   postSelectListPlanInfo({
-    pageSize: 10,
+    pageSize: 20,
     pageNum: 1,
   }).then((res) => {
     console.log(res);
     pageData.lineList = res.data.data.list;
-    handleClick(pageData.lineList[0]);
+    // handleClick(pageData.lineList[0]);
   });
 
   getSelectListPlanExecute({
-    pageSize: 4,
+    pageSize: 20,
     pageNum: 1,
   }).then((res) => {
     pageData.planList = res.data.data.list;
@@ -192,5 +399,8 @@ onMounted(() => {
   font-size: 14px;
   padding: 10px 6px;
   line-height: 30px;
+}
+.back-btn {
+  float: right;
 }
 </style>

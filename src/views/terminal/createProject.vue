@@ -5,7 +5,6 @@
     <map-container
       :showAir="false"
       :showLine2="false"
-      :view3D="true"
       :uesMouseTool="true"
       ref="FavoriteRef"
       class="map-container"
@@ -25,20 +24,27 @@
         </h3>
 
         <el-table border :data="pageData.projectList" style="width: 100%">
-          <el-table-column prop="taskName" label="任务">
+          <el-table-column width="100" prop="taskName" label="任务">
             <!-- handelSelectTask -->
             <template #default="scope">
               <span>{{ scope.row.taskName }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            width="180"
+            width="100"
             prop="taskCreateTime"
             label="创建时间"
           />"
           <el-table-column prop="taskName" label="操作">
             <!-- handelSelectTask -->
             <template #default="scope">
+              <el-button
+                size="small"
+                type="primary"
+                @click="saveTask(scope.row)"
+              >
+                选择
+              </el-button>
               <el-button
                 size="small"
                 type="primary"
@@ -111,10 +117,6 @@
                 :value="item.name"
               />
             </el-select>
-            <!-- 发生事件 -->
-            <!-- 初步范围 -->
-            <!-- 初步地点 -->
-            <!-- 其他信息 -->
           </el-form-item>
           <el-form-item label="发生时间">
             <el-date-picker
@@ -192,6 +194,15 @@ import {
   postEditTaskInfo,
 } from '../../api/index';
 import { ElMessage } from 'element-plus';
+
+const saveTask = (item) => {
+  // 存储任务
+  store.taskName = item.taskName;
+  store.taskId = item.taskId;
+  store.centerPoint = JSON.parse(item.centerPoint);
+  store.area = JSON.parse(item.taskArea);
+  store.saveTaskObj = item;
+};
 
 const handleBlackTask = () => {
   pageData.pageStatus = '任务列表';
@@ -402,6 +413,7 @@ const pageData = reactive({
       role: '大疆RT30K',
     },
   ],
+
   type: 1,
 });
 

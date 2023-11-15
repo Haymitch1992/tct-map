@@ -37,6 +37,12 @@
         {{ store.device2Pos }}
       </span>
 
+      <span>
+        {{ store.device1Line }}
+      </span>
+      <span>
+        {{ store.device2Line }}
+      </span>
       <h4>飞行器感知画面</h4>
       <!-- <video-box></video-box> -->
     </div>

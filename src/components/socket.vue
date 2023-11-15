@@ -72,7 +72,7 @@ export default {
       // this.socket.send('发送数据')
       setTimeout(() => {
         this.websocketsend();
-      }, 2000);
+      }, 5000);
     },
     websocketonerror(e) {
       console.log('WebSocket连接发生错误', e);
@@ -88,6 +88,15 @@ export default {
           case '有人机':
             store.device1Pos = [obj.data.longitude * 1, obj.data.latitude * 1];
             store.altitude = obj.data.altitude;
+            // let headingAngleObj = JSON.parse();
+            // console.log(obj.data.flightTrack,'obj.data.flightTrack');
+            let str = obj.data.flightTrack.replace(/'/g, '"');
+            let saveObj = JSON.parse(str);
+            // 将 str 中的'替换成"
+
+            console.log();
+            // let saveObj = JSON.parse(obj.data.flightTrack);
+            store.headingAngle = saveObj.headingAngle;
             break;
           case '无人机':
             store.device2Pos = [obj.data.longitude * 1, obj.data.latitude * 1];

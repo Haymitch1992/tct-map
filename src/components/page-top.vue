@@ -1,24 +1,34 @@
 <template>
   <div class="page-top">
- 
     <span>指挥调度工作站</span>
 
     <router-link to="/">
-      <el-button type="primary" class="btn">创建项目</el-button>
+      <el-button type="primary" class="btn">任务管理</el-button>
     </router-link>
     <router-link to="/editLine">
-      <el-button type="primary" class="btn">编辑航线</el-button>
+      <el-button v-show="store.taskId" type="primary" class="btn"
+        >航线管理</el-button
+      >
     </router-link>
     <router-link to="/setWayLine">
-      <el-button type="primary" class="btn">选择航线</el-button>
+      <el-button v-show="store.taskId" type="primary" class="btn"
+        >计划管理</el-button
+      >
     </router-link>
     <router-link to="/flightReplay">
-      <el-button type="primary" class="btn">飞行监视</el-button>
+      <el-button v-show="store.taskId" type="primary" class="btn"
+        >飞行监视</el-button
+      >
     </router-link>
-    <img src="http://www.bj-tct.com/web/images/logo.png"  style="float:right;margin-top: 10px;"/>
     <router-link to="/aircraft">
-      <el-button type="primary" class="btn">机载终端</el-button>
+      <el-button v-show="store.taskId" type="primary" class="btn"
+        >机载终端</el-button
+      >
     </router-link>
+    <img
+      src="http://www.bj-tct.com/web/images/logo.png"
+      style="float: right; margin-top: 10px"
+    />
   </div>
 </template>
 
@@ -38,3 +48,8 @@
   margin: 0 10px;
 }
 </style>
+
+<script setup>
+import { mainStore } from '../store/index';
+const store = mainStore();
+</script>

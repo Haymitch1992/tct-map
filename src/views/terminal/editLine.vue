@@ -7,71 +7,106 @@
     <map-container
       :showAir="false"
       :showLine2="false"
+      :uesMouseTool="true"
       class="map-container"
       ref="FavoriteRef"
     ></map-container>
     <div class="right-container">
-      <h3>
-        航线列表
-        <el-button
-          size="small"
-          type="primary"
-          @click="createLine()"
-          class="create-btn"
-          >创建航线</el-button
-        >
-      </h3>
+      <div v-if="pageData.status === 1">
+        <h3>
+          航线列表
+          <el-button
+            size="small"
+            type="primary"
+            @click="createLine()"
+            class="create-btn"
+            >创建航线</el-button
+          >
+        </h3>
 
-      <!-- {{ pageData.lineList }} -->
-      <el-table :data="pageData.lineList" border style="width: 100%">
-        <el-table-column prop="planName" label="航线名称" />
-        <!-- <el-table-column prop="planId" label="航线名称" width="50" /> -->
-        <el-table-column fixed="right" label="操作">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="handleClick(scope.row)"
-              >选择</el-button
-            >
-            <el-button
-              type="danger"
-              @click="dellteLine(scope.row.planId)"
-              size="small"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-      <div class="pagination-line">
-        <el-pagination
-          v-model:current-page="pageData.pageNum"
-          :page-size="pageData.pageSize"
-          :small="true"
-          :background="true"
-          layout="total, prev, pager, next"
-          :total="pageData.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <!-- {{ pageData.lineList }} -->
+        <el-table :data="pageData.lineList" border style="width: 100%">
+          <el-table-column prop="planName" label="航线名称" />
+          <!-- <el-table-column prop="planId" label="航线名称" width="50" /> -->
+          <el-table-column fixed="right" label="操作">
+            <template #default="scope">
+              <el-button
+                type="primary"
+                size="small"
+                @click="handleClick(scope.row)"
+                >选择</el-button
+              >
+
+              <el-button
+                type="danger"
+                @click="dellteLine(scope.row.planId)"
+                size="small"
+                >删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <div class="pagination-line">
+          <el-pagination
+            v-model:current-page="pageData.pageNum"
+            :page-size="pageData.pageSize"
+            :small="true"
+            :background="true"
+            layout="total, prev, pager, next"
+            :total="pageData.total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
       </div>
+      <div v-if="pageData.status === 2">
+        <h3>
+          <span v-if="pageData.planId">编辑航线</span>
+          <span v-if="!pageData.planId">创建航线</span>
+          <el-button
+            size="small"
+            type="primary"
+            @click="backList"
+            class="create-btn"
+            >航线列表</el-button
+          >
+        </h3>
+        <h4>航线名称</h4>
+        <el-input v-model="pageData.planName" class="planName-line"></el-input>
+        <h4>选择飞行器与负载</h4>
+        <div class="device-line">
+          <el-select v-model="pageData.deviceKey" placeholder="请选择事件类型">
+            <el-option
+              v-for="item in pageData.deviceList"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name"
+            />
+          </el-select>
+        </div>
+        <h4>航线类型</h4>
+        <div class="device-line">
+          <el-select v-model="pageData.lineType" placeholder="请选择事件类型">
+            <el-option
+              v-for="item in pageData.lineTypeList"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name"
+            />
+          </el-select>
+        </div>
+        <h4>航线数据</h4>
+        <div class="line-data">{{ store.device1Line }}</div>
+        <el-button type="primary" @click="startSetLine()">编辑</el-button>
+        <el-button type="primary" @click="closeSetLine()">结束编辑</el-button>
 
-      <h4>航线名称</h4>
-      <el-input v-model="pageData.planName" class="planName-line"></el-input>
-      <!-- 
-      <h4>航线数据：</h4>
-      <span class="data-text">
-        {{ store.device1Line }}
-      </span> -->
-      <el-button type="primary" @click="startSetLine()">编辑</el-button>
-      <el-button type="primary" @click="closeSetLine()">结束编辑</el-button>
-
-      <el-button type="primary" v-if="pageData.planId" @click="editLine()"
-        >更新</el-button
-      >
-      <el-button type="primary" v-if="!pageData.planId" @click="addLine()"
-        >新建</el-button
-      >
+        <el-button type="primary" v-if="pageData.planId" @click="editLine()"
+          >更新</el-button
+        >
+        <el-button type="primary" v-if="!pageData.planId" @click="addLine()"
+          >新建</el-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -94,6 +129,10 @@ import {
   getSelectListPlanExecute,
 } from '../../api/index.ts';
 
+const backList = () => {
+  //
+  pageData.status = 1;
+};
 const pageData = reactive({
   lineList: [],
   planName: null,
@@ -101,7 +140,16 @@ const pageData = reactive({
   planList: [],
   pageSize: 5,
   total: 0,
+  status: 1,
   pageNum: 1,
+  deviceKey: '大疆RTK300',
+  lineType: '航点航线',
+  deviceList: [{ name: '大疆RTK300' }, { name: '大疆RTK500' }],
+  lineTypeList: [
+    { name: '航点航线' },
+    { name: '面状航线' },
+    { name: '带状航线' },
+  ],
 });
 const FavoriteRef = ref(null);
 const store = mainStore();
@@ -119,20 +167,22 @@ const handleClick = (item) => {
   store.device1Line = JSON.parse(item.planInfo);
   pageData.planId = item.planId;
   FavoriteRef.value.initMapFn();
+  pageData.status = 2;
 };
 
 // 创建航线
 const createLine = () => {
   pageData.planId = null;
   pageData.planName = '新建航线';
-
+  pageData.status = 2;
   store.device1Line = [
-    [116.326755, 39.788338],
-    [116.33287, 39.798175],
+    [115.999797, 39.844355],
+    [116.030208, 39.911192],
+    [116.057195, 39.848882],
+    [116.121909, 39.92846],
   ];
-  setTimeout(() => {
-    FavoriteRef.value.initMapFn();
-  }, 1000);
+  FavoriteRef.value.initMapFn();
+  // FavoriteRef.value.initMapFn();
 };
 
 const addLine = () => {
@@ -140,9 +190,11 @@ const addLine = () => {
   postAddPlanInfo({
     planName: pageData.planName,
     planInfo: JSON.stringify(store.device1Line),
+    taskId: store.taskId,
   }).then((res) => {
     console.log(res);
     getInfo();
+    backList();
   });
 };
 
@@ -161,6 +213,7 @@ const editLine = () => {
       type: 'success',
     });
     getInfo();
+    backList();
   });
 };
 
@@ -174,6 +227,7 @@ const dellteLine = (id) => {
       type: 'success',
     });
     getInfo();
+    backList();
   });
 };
 
@@ -198,7 +252,7 @@ const getInfo = () => {
     console.log(res);
     pageData.lineList = res.data.data.list;
     pageData.total = res.data.data.total;
-    handleClick(pageData.lineList[0]);
+    // handleClick(pageData.lineList[0]);
   });
 
   getSelectListPlanExecute({
@@ -211,9 +265,12 @@ const getInfo = () => {
 
 onMounted(() => {
   getInfo();
-  // store.device1Pos = [0, 0];
-
-  // store.device1Pos = [0, 0];
+  // 绘制
+  if (store.taskId) {
+    setTimeout(() => {
+      store.area = JSON.parse(store.saveTaskObj.taskArea);
+    }, 2000);
+  }
 });
 // hang
 </script>
@@ -264,5 +321,15 @@ onMounted(() => {
 }
 .pagination-line {
   padding: 10px 4px;
+}
+.device-line {
+  // padding-bottom: 10px;
+}
+.line-data {
+  font-size: 12px;
+  color: #fff;
+  background-color: #101010;
+  padding: 8px;
+  margin-bottom: 20px;
 }
 </style>
