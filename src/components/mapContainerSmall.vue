@@ -48,6 +48,7 @@ const initMap = () => {
       });
       drawAir();
       drawLine();
+      drawFire();
       // var polyEditor = new AMap.PolyEditor(map, polygon)
       // polyEditor = new AMap.PolygonEditor(map)
       map.on('click', function (e) {
@@ -173,6 +174,67 @@ const startEdit = () => {
   console.log('结束编辑');
 };
 
+var fireLayer = null;
+var fireArea = null;
+const drawFire = () => {
+  if (fireLayer) {
+    fireLayer.clear();
+    map.remove(fireLayer);
+  }
+  if (fireArea) {
+    fireLayer.clear();
+    map.remove(fireArea);
+  }
+  var icon = {
+    // 图标类型，现阶段只支持 image 类型
+    type: 'image',
+    // 图片 url
+    image: '/火苗.png',
+    // 图片尺寸
+    size: [48, 48],
+    // 图片相对 position 的锚点，默认为 bottom-center
+    anchor: 'center',
+  };
+  // 创建火苗图层
+  fireLayer = new AMap.LabelsLayer({
+    zooms: [3, 20],
+    zIndex: 1000,
+  });
+  let markerList = store.fireRange.markerList;
+  let markers = [];
+  markerList.forEach((item) => {
+    var labelMarker = new AMap.LabelMarker({
+      position: item,
+      icon,
+    });
+
+    markers.push(labelMarker);
+  });
+  if (store.fireRange.fireArea.length === 0) return;
+  fireArea = new AMap.Polygon({
+    path: returnLinePath(store.fireRange.fireArea),
+    strokeColor: '#F00',
+    strokeWeight: 6,
+    strokeOpacity: 0.2,
+    fillOpacity: 0.4,
+    fillColor: '#aa0000',
+    zIndex: 50,
+  });
+
+  fireLayer.add(markers);
+  map.add(fireLayer);
+  map.add(fireArea);
+  // 获取火苗坐标
+};
+
+const returnLinePath = (data) => {
+  let arr = [];
+  for (const item of data) {
+    arr.push([item.lng, item.lat]);
+  }
+  return arr;
+};
+
 const changeRotation = (num) => {
   map.setRotation(num);
 };
@@ -194,6 +256,17 @@ watch(
   () => store.device1Line,
   (data) => {
     initMap();
+  },
+  {
+    deep: true,
+  }
+);
+
+watch(
+  () => store.fireRange,
+  (data) => {
+    // 绘制火情
+    drawFire();
   },
   {
     deep: true,
@@ -236,7 +309,7 @@ watch(
   }
 );
 
-// 监听火情变化 绘制火情 
+// 监听火情变化 绘制火情
 
 //
 </script>

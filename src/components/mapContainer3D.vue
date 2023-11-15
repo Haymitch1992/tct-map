@@ -294,11 +294,20 @@ var fireLayer = null;
 var fireArea = null;
 // 绘制火苗
 const drawFire = () => {
+  if (fireLayer) {
+    fireLayer.clear();
+    map.remove(fireLayer);
+  }
+  if (fireArea) {
+    fireLayer.clear();
+    map.remove(fireArea);
+  }
+
   var icon = {
     // 图标类型，现阶段只支持 image 类型
     type: 'image',
     // 图片 url
-    image: '/public/火苗.png',
+    image: '/火苗.png',
     // 图片尺寸
     size: [48, 48],
     // 图片相对 position 的锚点，默认为 bottom-center
@@ -309,10 +318,7 @@ const drawFire = () => {
     zooms: [3, 20],
     zIndex: 1000,
   });
-  let markerList = [
-    [115.986918, 39.884053],
-    [115.979593, 39.875295],
-  ];
+  let markerList = store.fireRange.markerList;
   let markers = [];
   markerList.forEach((item) => {
     var labelMarker = new AMap.LabelMarker({
@@ -323,8 +329,9 @@ const drawFire = () => {
     markers.push(labelMarker);
   });
 
+  if (store.fireRange.fireArea.length === 0) return;
   fireArea = new AMap.Polygon({
-    path: returnLinePath(store.fireRange[0]),
+    path: returnLinePath(store.fireRange.fireArea),
     strokeColor: '#F00',
     strokeWeight: 6,
     strokeOpacity: 0.2,
@@ -345,7 +352,6 @@ const editTaskPolygon = () => {
   var polyEditor = new AMap.PolyEditor(map, polygon);
 
   polyEditor.on('end', function (event) {
-    log.info('触发事件： end');
     // event.target 即为编辑后的多边形对象
   });
   polyEditor.open();
@@ -862,19 +868,20 @@ watch(
         map.remove(drawSubLineLayer);
       }
 
-      // if (draw3dLineLayer2) {
-      //   map.remove(draw3dLineLayer2);
-      // }
-      // if (drawSubLineLayer2) {
-      //   map.remove(drawSubLineLayer2);
-      // }
       draw3dLine();
-
       drawSubLine();
-
-      // draw3dLine2();
-      // drawSubLine2();
     }
+  },
+  {
+    deep: true,
+  }
+);
+watch(
+  () => store.fireRange,
+  (data) => {
+    //  绘制有人机航线
+
+    drawFire();
   },
   {
     deep: true,

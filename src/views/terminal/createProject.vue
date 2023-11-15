@@ -122,6 +122,8 @@
           <el-form-item label="发生时间">
             <el-date-picker
               v-model="formLabelAlign.eventTime"
+              format="YYYY/MM/DD HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
               type="datetime"
               placeholder="请选择发生时间"
             />

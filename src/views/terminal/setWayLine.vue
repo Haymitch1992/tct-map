@@ -30,10 +30,19 @@
             label="计划/实际时间"
             width="100"
           /> -->
+          <el-table-column
+            prop="executeName"
+            label="计划/实际时间"
+            width="100"
+          />
+          <el-table-column prop="planStatus" label="状态" />
+          <el-table-column prop="" label="类型" />
+          <el-table-column prop="" label="计划名称" />
+          <el-table-column prop="" label="设备名称" />
+          <el-table-column prop="" label="航线名称" />
           <el-table-column prop="executeName" label="计划名称" width="100" />
-          <el-table-column prop="planStatus" label="planStatus" width="40" />
-          <el-table-column prop="planId" label="planId" width="40" />
-          <el-table-column fixed="right" label="操作">
+          <!-- <el-table-column prop="planId" label="planId" width="40" /> -->
+          <el-table-column fixed="right" label="操作" width="200">
             <template #default="scope">
               <el-button
                 size="small"
@@ -155,32 +164,6 @@
         </el-form>
         <el-button @click="addflightinfo" type="primary">保存</el-button>
       </div>
-
-      <!-- <el-table :data="pageData.lineList" border style="width: 100%">
-        <el-table-column prop="planName" label="航线ID" width="100" />
-        <el-table-column fixed="right" label="操作">
-          <template #default="scope">
-            <el-button
-              type="primary"
-              size="small"
-              @click="handleClick(scope.row)"
-              >选择</el-button
-            >
-            <el-button
-              size="small"
-              type="warning"
-              @click="addflightinfo(scope.row.planId, '无人机', 2)"
-              >无人机</el-button
-            >
-            <el-button
-              size="small"
-              type="warning"
-              @click="addflightinfo(scope.row.planId, '有人机', 1)"
-              >有人机</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table> -->
     </div>
   </div>
 </template>
@@ -374,7 +357,7 @@ onMounted(() => {
 }
 
 .right-container {
-  width: 400px;
+  width: 800px;
   overflow: hidden;
   height: calc(100vh - 64px);
   position: absolute;

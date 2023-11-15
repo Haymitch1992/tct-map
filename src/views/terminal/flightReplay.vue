@@ -61,7 +61,11 @@ import { mainStore } from '../../store/index';
 import videoBox from '../../components/video.vue';
 import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { getEeditPlanExecute, postFlightInfoGround } from '../../api/index.ts';
+import {
+  getEeditPlanExecute,
+  postFlightInfoGround,
+  postEditTaskInfo,
+} from '../../api/index.ts';
 import { wgs84togcj02 } from '../../vendors/coordtransform.js';
 import socket from '../../components/socket.vue';
 
@@ -70,11 +74,59 @@ const store = mainStore();
 // 获取数据
 
 const showWarning = () => {
-  FavoriteRef.value.showWarning();
+  let str = JSON.stringify({
+    markerList: [
+      [115.986918, 39.884053],
+      [115.979593, 39.875295],
+    ],
+    fireArea: [
+      {
+        Q: 39.88405250992457,
+        R: 115.98691757038239,
+        lng: 115.986918,
+        lat: 39.884053,
+      },
+      {
+        Q: 39.87529472119752,
+        R: 115.97959284245974,
+        lng: 115.979593,
+        lat: 39.875295,
+      },
+      {
+        Q: 39.86823551688767,
+        R: 115.99365133792162,
+        lng: 115.993651,
+        lat: 39.868236,
+      },
+      {
+        Q: 39.869374945943,
+        R: 116.01888090133667,
+        lng: 116.018881,
+        lat: 39.869375,
+      },
+      {
+        Q: 39.87835377629659,
+        R: 116.0065115042031,
+        lng: 116.006512,
+        lat: 39.878354,
+      },
+    ],
+  });
+  store.saveTaskObj.fireRange = str;
+  postEditTaskInfo({
+    ...store.saveTaskObj,
+  }).then((res) => {});
+  //
+
+  // FavoriteRef.value.showWarning();
 };
 
 const hideWarning = () => {
-  FavoriteRef.value.hideWarning();
+  store.saveTaskObj.fireRange = '';
+  postEditTaskInfo({
+    ...store.saveTaskObj,
+  }).then((res) => {});
+  // FavoriteRef.value.hideWarning();
 };
 const pageData = reactive({
   currentData: null,

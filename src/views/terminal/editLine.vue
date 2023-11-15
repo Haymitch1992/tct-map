@@ -145,7 +145,11 @@ const pageData = reactive({
   pageNum: 1,
   deviceKey: '大疆RTK300',
   lineType: '航点航线',
-  deviceList: [{ name: '大疆RTK300' }, { name: '大疆RTK500' }],
+  deviceList: [
+    { name: '大疆RTK300' },
+    { name: '大疆RTK500' },
+    { name: '救援直升机' },
+  ],
   lineTypeList: [
     { name: '航点航线' },
     { name: '面状航线' },

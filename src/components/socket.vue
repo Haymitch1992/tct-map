@@ -130,6 +130,17 @@ export default {
             break;
         }
       }
+      if (obj.type === 3) {
+        // 存储火灾状态
+        if (obj.data.fireRange) {
+          store.fireRange = JSON.parse(obj.data.fireRange);
+        } else {
+          store.fireRange = {
+            markerList: [],
+            fireArea: [],
+          };
+        }
+      }
     },
     websocketclose(e) {
       console.log('connection closed (' + e.code + ')');
