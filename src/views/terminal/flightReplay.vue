@@ -4,9 +4,9 @@
   <div class="page-container">
     <page-top></page-top>
     <map-container
-      :showAir="true"
-      :showLine2="true"
+
       :view3D="true"
+      :uesMouseTool="false"
       class="map-container"
       ref="FavoriteRef"
     ></map-container>

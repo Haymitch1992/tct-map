@@ -3,8 +3,6 @@
   <div class="page-container">
     <page-top></page-top>
     <map-container
-      :showAir="false"
-      :showLine2="false"
       :view3D="false"
       :uesMouseTool="true"
       ref="FavoriteRef"

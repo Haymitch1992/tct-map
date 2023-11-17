@@ -10,22 +10,14 @@ var airPointLayer2 = null;
 var airPointLayer = null;
 
 const props = defineProps({
-  showAir: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  showLine2: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
   view3D: {
+    //3D 地图 和2D 切换
     type: Boolean,
     required: true,
     default: false,
   },
   uesMouseTool: {
+    // 是否使用鼠标工具
     type: Boolean,
     required: true,
     default: false,
@@ -173,6 +165,10 @@ const initMap = () => {
       // drawCenterPoint(store.centerPoint);
       drawReact();
       drawAirport();
+      // 是否存在 任务区域
+      if (store.area.length > 0) {
+        drawTaskArea(store.area);
+      }
     })
     .catch((e) => {
       console.log(e);
@@ -863,11 +859,9 @@ watch(
       if (draw3dLineLayer) {
         map.remove(draw3dLineLayer);
       }
-
       if (drawSubLineLayer) {
         map.remove(drawSubLineLayer);
       }
-
       draw3dLine();
       drawSubLine();
     }
@@ -893,13 +887,6 @@ watch(
   (data) => {
     //  绘制有人机航线
     if (props.view3D && Map3DPluginInit) {
-      // if (draw3dLineLayer) {
-      //   map.remove(draw3dLineLayer);
-      // }
-      // if (drawSubLineLayer) {
-      //   map.remove(drawSubLineLayer);
-      // }
-
       if (draw3dLineLayer2) {
         map.remove(draw3dLineLayer2);
       }
@@ -907,9 +894,6 @@ watch(
       if (drawSubLineLayer2) {
         map.remove(drawSubLineLayer2);
       }
-      // draw3dLine();
-      // drawSubLine();
-
       draw3dLine2();
       drawSubLine2();
     }

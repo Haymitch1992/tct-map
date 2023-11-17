@@ -4,9 +4,8 @@
   <div class="page-container">
     <page-top></page-top>
     <map-container
-      :showAir="false"
-      :showLine2="false"
       :view3D="true"
+      :uesMouseTool="false"
       class="map-container"
       ref="FavoriteRef"
     ></map-container>
@@ -31,36 +30,44 @@
             width="100"
           /> -->
           <el-table-column
-            prop="executeName"
+            prop="executeTime"
             label="计划/实际时间"
             width="100"
           />
-          <el-table-column prop="planStatus" label="状态" />
-          <el-table-column prop="" label="类型" />
-          <el-table-column prop="" label="计划名称" />
-          <el-table-column prop="" label="设备名称" />
-          <el-table-column prop="" label="航线名称" />
+          <el-table-column prop="planStatus" label="状态">
+            <template #default="scope">
+              <el-tag :type="statusToType(scope.row.planStatus)">{{
+                transferStatus(scope.row.planStatus)
+              }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="" label="类型">
+            <template #default="scope"> 灭火应急 </template>
+          </el-table-column>
           <el-table-column prop="executeName" label="计划名称" width="100" />
-          <!-- <el-table-column prop="planId" label="planId" width="40" /> -->
+          <el-table-column prop="deviceKey" label="设备名称" />
+          <el-table-column prop="planId" label="航线名称" />
           <el-table-column fixed="right" label="操作" width="200">
             <template #default="scope">
               <el-button
                 size="small"
-                type="warning"
+                type="primary"
+                v-if="scope.row.planStatus === 0 || scope.row.planStatus === 3"
                 @click="editflightinfo(scope.row, 1)"
                 >下达</el-button
+              >
+              <el-button
+                size="small"
+                type="danger"
+                v-if="scope.row.planStatus === 1 || scope.row.planStatus === 2"
+                @click="editflightinfo(scope.row, 3)"
+                >结束</el-button
               >
               <el-button
                 size="small"
                 type="warning"
                 @click="handleDynamicPlanExecute(scope.row)"
                 >放飞</el-button
-              >
-              <el-button
-                size="small"
-                type="warning"
-                @click="editflightinfo(scope.row, 3)"
-                >取消</el-button
               >
             </template>
           </el-table-column>
@@ -186,6 +193,34 @@ import {
   getSelectListPlanExecute,
   postdynamicPlanExecute,
 } from '../../api/index.ts';
+
+const statusToType = (num) => {
+  switch (num) {
+    case 1:
+      return 'warning';
+    case 2:
+      return 'success';
+    case 3:
+      return 'primary';
+    case 0:
+      return 'info';
+  }
+};
+const transferStatus = (num) => {
+  switch (num) {
+    case 1:
+      return '已下达';
+    case 2:
+      return '执行中';
+    case 3:
+      return '执行完毕';
+    case 0:
+      return '未执行';
+    default:
+      return '未知';
+    // 0:未执行、1:已下发，待放飞、2:执行中、3:已执行完毕
+  }
+};
 
 const handleCreateTask = () => {
   pageData.stataus = 2;
