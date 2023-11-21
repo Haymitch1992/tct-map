@@ -177,9 +177,10 @@ const initMap = () => {
 
 const drawLine = () => {
   console.log('绘制线', props.view3D);
+  let path = JSON.parse(JSON.stringify(store.device1Line));
   //
   var polyline1 = new AMap.Polyline({
-    path: store.device1Line,
+    path: path,
     strokeWeight: 6,
     strokeOpacity: 0.9,
     zIndex: 50,

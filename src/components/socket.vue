@@ -147,8 +147,8 @@ export default {
       this.reconnect();
     },
     websocketsend() {
-      this.socket.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
-      this.socket.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
+      // this.socket.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
+      // this.socket.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
     },
   },
   unmounted() {

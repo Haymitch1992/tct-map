@@ -5,7 +5,6 @@
   <div class="page-container">
     <page-top></page-top>
     <map-container
-
       :view3D="false"
       :uesMouseTool="true"
       class="map-container"
@@ -96,6 +95,8 @@
           </el-select>
         </div>
         <h4>航线数据</h4>
+        <!-- 显示航线 -->
+        <line-item></line-item>
         <div class="line-data">{{ store.device1Line }}</div>
         <el-button type="primary" @click="startSetLine()">编辑</el-button>
         <el-button type="primary" @click="closeSetLine()">结束编辑</el-button>
@@ -112,6 +113,7 @@
 </template>
 
 <script setup>
+import lineItem from '../../components/line-item.vue';
 import mapContainer from '../../components/mapContainer3D.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
@@ -209,7 +211,10 @@ const editLine = () => {
   postEditPlanInfo({
     planName: pageData.planName,
     planId: pageData.planId,
-    planInfo: JSON.stringify(store.device1Line),
+    planInfo: JSON.stringify({
+      pointList: store.device1Line,
+      altitudeList: [0, 500, 500, 500],
+    }),
   }).then((res) => {
     console.log(res);
     ElMessage({
