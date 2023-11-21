@@ -11,6 +11,7 @@ export const mainStore = defineStore('main', {
       device1Pos:[116.118815,39.922553],// 有人机 实时位置
       device1Line: [],// 有人机 航线
       altitudeList: [],
+      altitudeList2: [],
       line: {pointList:[[111,222],[111,222]],altitudeList:[0,500]},
       pointList:[],
       device2Pos:[116.316062, 39.828417], // 无人机 实时位置

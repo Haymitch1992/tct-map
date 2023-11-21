@@ -97,7 +97,6 @@
         <h4>航线数据</h4>
         <!-- 显示航线 -->
         <line-item></line-item>
-        <div class="line-data">{{ store.device1Line }}</div>
         <el-button type="primary" @click="startSetLine()">编辑</el-button>
         <el-button type="primary" @click="closeSetLine()">结束编辑</el-button>
 
@@ -170,7 +169,25 @@ const startSetLine = () => {
 
 const handleClick = (item) => {
   pageData.planName = item.planName;
-  store.device1Line = JSON.parse(item.planInfo);
+  // 航线信息 拆分为两部分
+  let lineObj = JSON.parse(item.planInfo);
+  if (lineObj.pointList) {
+    store.device1Line = lineObj.pointList;
+    store.altitudeList = lineObj.altitudeList;
+  } else {
+    store.device1Line = lineObj;
+    store.altitudeList = [];
+    store.device1Line.forEach((item, index) => {
+      if (index === 0) {
+        store.altitudeList.push(0);
+      } else {
+        store.altitudeList.push(500);
+      }
+    });
+  }
+  //new
+
+  // store.device1Line = JSON.parse(item.planInfo);
   pageData.planId = item.planId;
   FavoriteRef.value.initMapFn();
   pageData.status = 2;
@@ -195,7 +212,10 @@ const addLine = () => {
   closeSetLine();
   postAddPlanInfo({
     planName: pageData.planName,
-    planInfo: JSON.stringify(store.device1Line),
+    planInfo: JSON.stringify({
+      pointList: store.device1Line,
+      altitudeList: store.altitudeList,
+    }),
     taskId: store.taskId,
   }).then((res) => {
     console.log(res);
@@ -213,7 +233,7 @@ const editLine = () => {
     planId: pageData.planId,
     planInfo: JSON.stringify({
       pointList: store.device1Line,
-      altitudeList: [0, 500, 500, 500],
+      altitudeList: store.altitudeList,
     }),
   }).then((res) => {
     console.log(res);

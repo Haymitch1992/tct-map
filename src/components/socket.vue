@@ -16,8 +16,8 @@ const heartCheck = {
     this.reset();
     this.timer = setTimeout(() => {
       // onmessage拿到返回的心跳就说明连接正常
-      ws.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
-      ws.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
+      // ws.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
+      // ws.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
       this.serverTimer = setTimeout(() => {
         // 如果超过一定时间还没响应(响应后触发重置)，说明后端断开了
         ws.close();
@@ -25,6 +25,8 @@ const heartCheck = {
     }, this.timeout);
   },
 };
+var lineObj = null;
+var lineObj2 = null;
 export default {
   // 获取车辆信息
   // 获取车站信息
@@ -110,10 +112,42 @@ export default {
           // 储存航线
           switch (obj.data.deviceKey) {
             case '有人机':
-              store.device1Line = JSON.parse(obj.data.planInfo);
+              lineObj = JSON.parse(obj.data.planInfo);
+              if (lineObj.pointList) {
+                store.device1Line = lineObj.pointList;
+                store.altitudeList = lineObj.altitudeList;
+              } else {
+                store.device1Line = lineObj;
+                store.altitudeList = [];
+                store.device1Line.forEach((item, index) => {
+                  if (index === 0) {
+                    store.altitudeList.push(0);
+                  } else {
+                    store.altitudeList.push(500);
+                  }
+                });
+              }
+
+              // store.device1Line = JSON.parse(obj.data.planInfo);
               break;
             case '无人机':
-              store.device2Line = JSON.parse(obj.data.planInfo);
+              lineObj2 = JSON.parse(obj.data.planInfo);
+              if (lineObj2.pointList) {
+                store.device2Line = lineObj2.pointList;
+                store.altitudeList2 = lineObj2.altitudeList;
+              } else {
+                store.device2Line = lineObj2;
+                store.altitudeList2 = [];
+                store.device2Line.forEach((item, index) => {
+                  if (index === 0) {
+                    store.altitudeList2.push(0);
+                  } else {
+                    store.altitudeList2.push(500);
+                  }
+                });
+              }
+
+              // store.device2Line = JSON.parse(obj.data.planInfo);
               break;
           }
         }
@@ -124,9 +158,11 @@ export default {
         switch (obj.data) {
           case '有人机':
             store.device1Line = [];
+            store.altitudeList = [];
             break;
           case '无人机':
             store.device2Line = [];
+            store.altitudeList2 = [];
             break;
         }
       }
@@ -147,8 +183,8 @@ export default {
       this.reconnect();
     },
     websocketsend() {
-      // this.socket.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
-      // this.socket.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
+      this.socket.send(JSON.stringify({ deviceKey: '有人机', type: 2 }));
+      this.socket.send(JSON.stringify({ deviceKey: '无人机', type: 2 }));
     },
   },
   unmounted() {

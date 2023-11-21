@@ -299,6 +299,8 @@ const handleClick = (item) => {
   //
   pageData.lineList.forEach((item) => {
     if (item.planId === formLabelAlign.planId) {
+
+      
       store.device1Line = JSON.parse(item.planInfo);
       FavoriteRef.value.initMapFn();
     }

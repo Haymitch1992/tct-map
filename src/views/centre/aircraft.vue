@@ -24,69 +24,13 @@ const pageData = reactive({
     headingAngle: 10, //  偏转 yaw
   },
 });
-var timer = null;
-var timer2 = null;
-var num = 0;
-const test = () => {
-  getEeditPlanExecute({
-    deviceKey: '长空之王',
-  }).then((res) => {
-    console.log(res.data);
-    store.device1Line = JSON.parse(res.data.data.planInfo);
 
-    // 存在飞行计划 循环请求
-    timer = setInterval(() => {
-      postFlightInfo({
-        planId: res.data.data.planId,
-        deviceKey: '长空之王',
-      }).then((res2) => {
-        if (!res2.data) {
-          clearInterval(timer);
-          timer2 = setInterval(() => {
-            test();
-          }, 100);
-          return;
-        }
-        //
-        pageData.currentData = res2.data.data;
-        let obj2 = res2.data.data;
-        store.device1Pos = wgs84togcj02(
-          parseFloat(pageData.currentData.longitude),
-          parseFloat(pageData.currentData.latitude)
-        );
 
-        // store.device1Pos = [
-        //   parseFloat(obj2.longitude),
-        //   parseFloat(obj2.latitude),
-        // ];
-        store.altitude = pageData.currentData.altitude;
-
-        let obj = JSON.parse(pageData.currentData.flightTrack);
-        store.headingAngle = obj.headingAngle;
-        // pageData.flightTrack = obj;
-        num += 1;
-
-        if (res2.data.data.warningType === '10001' && num % 10 == 1) {
-          ElMessage({
-            message: res2.data.data.warningInfo,
-            type: 'warning',
-          });
-        }
-      });
-    }, 100);
-    if (res.data) {
-      clearInterval(timer2);
-      return;
-    }
-  });
-};
 onMounted(() => {
-  // timer2 = setInterval(() => {
-  //   test();
-  // }, 100);
+
 });
 onUnmounted(() => {
-  clearInterval(timer);
+
 });
 
 const obj = {

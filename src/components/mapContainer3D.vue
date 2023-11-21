@@ -425,10 +425,11 @@ const drawSubLine = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -1000;
+
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
-
+    var height = -store.altitudeList[i] || 0;
+    console.log('height', height);
     // 连线
     lineGeo.vertices.push(center.x, center.y, 0);
     lineGeo.vertexColors.push(1, 1, 1, 1);
@@ -464,8 +465,9 @@ const drawSubLine2 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -1000;
+
   for (var i = 0; i < path.length; i++) {
+    var height = -store.altitudeList[i] || 0;
     var center = map.lngLatToGeodeticCoord(path[i]);
 
     // 连线
@@ -597,9 +599,23 @@ const draw3dLine = () => {
   map.plugin(['Map3D'], function () {
     draw3dLineLayer = new AMap.Object3DLayer();
     let path = JSON.parse(JSON.stringify(store.device1Line));
+    let arr = [];
+    store.altitudeList.forEach((item, index) => {
+      if (!item) {
+        arr.push(-1);
+      } else {
+        arr.push(item);
+      }
+    });
     var meshLine = new AMap.Object3D.MeshLine({
       path: path,
-      height: [1000, 1000, 1000, 1000, 1000, 1000],
+      // path: [
+      //   new AMap.LngLat(115.994165, 39.867676),
+      //   new AMap.LngLat(115.993042, 39.870379),
+      //   new AMap.LngLat(115.980482, 39.903874),
+      // ],
+      height: store.altitudeList,
+      height: arr,
       color: 'rgba(55,129,240, 0.9)',
       width: 6,
     });
@@ -619,7 +635,7 @@ const draw3dLine2 = () => {
     let path = JSON.parse(JSON.stringify(store.device2Line));
     var meshLine = new AMap.Object3D.MeshLine({
       path: path,
-      height: [1000, 1000, 1000, 1000, 1000, 1000],
+      height: store.altitudeList2,
       color: 'rgba(155,129,240, 0.9)',
       width: 6,
     });
@@ -741,7 +757,7 @@ const draw3dPoint2 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -store.altitude * 5;
+  var height = -store.altitude * 1;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 
