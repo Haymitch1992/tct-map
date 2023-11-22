@@ -179,7 +179,6 @@
 import mapContainer from '../../components/mapContainer2D.vue';
 import pageTop from '../../components/page-top.vue';
 import { mainStore } from '../../store/index';
-import videoBox from '../../components/video.vue';
 import { ref, reactive, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
 
@@ -299,15 +298,26 @@ const handleClick = (item) => {
   //
   pageData.lineList.forEach((item) => {
     if (item.planId === formLabelAlign.planId) {
+      let lineObj = JSON.parse(item.planInfo);
+      if (lineObj.pointList) {
+        store.device1Line = lineObj.pointList;
+        store.altitudeList = lineObj.altitudeList;
+      } else {
+        store.device1Line = lineObj;
+        store.altitudeList = [];
+        store.device1Line.forEach((item, index) => {
+          if (index === 0) {
+            store.altitudeList.push(0);
+          } else {
+            store.altitudeList.push(500);
+          }
+        });
+      }
 
-      
-      store.device1Line = JSON.parse(item.planInfo);
+      // store.device1Line = JSON.parse(item.planInfo);
       FavoriteRef.value.initMapFn();
     }
   });
-  // pageData.planName = item.planName;
-
-  // pageData.planId = item.planId;
 };
 
 // 创建航线
@@ -364,9 +374,7 @@ const getInfo = () => {
     pageSize: 20,
     pageNum: 1,
   }).then((res) => {
-    console.log(res);
     pageData.lineList = res.data.data.list;
-    // handleClick(pageData.lineList[0]);
   });
 
   getSelectListPlanExecute({
