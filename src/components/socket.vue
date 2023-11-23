@@ -1,5 +1,5 @@
 <template>
-  <div class="box">websocket</div>
+  <div class="box"></div>
 </template>
 <script>
 import { mainStore } from '../store/index';
@@ -33,7 +33,7 @@ export default {
   name: 'Websocket',
   data() {
     return {
-      wsuri: 'ws://172.51.216.125:12125/websocket',
+      wsuri: 'wss://172.51.216.125:12125/websocket',
       lockReconnect: false, // 连接失败不进行重连
       maxReconnect: 5, // 最大重连次数，若连接失败
       socket: null,
@@ -96,7 +96,6 @@ export default {
             let saveObj = JSON.parse(str);
             // 将 str 中的'替换成"
 
-            console.log();
             // let saveObj = JSON.parse(obj.data.flightTrack);
             store.headingAngle = saveObj.headingAngle;
             break;

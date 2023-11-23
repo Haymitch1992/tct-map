@@ -314,7 +314,6 @@ const handleClick = (item) => {
         });
       }
 
-      // store.device1Line = JSON.parse(item.planInfo);
       FavoriteRef.value.initMapFn();
     }
   });

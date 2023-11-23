@@ -85,7 +85,21 @@ export async function postdynamicPlanExecute(loginForm:any) {
     loginForm)
 }
 
-
+// 飞行计划列表 
+export async function getHistoryPlanList(loginForm:any) { 
+  return request('/api/fightPathHistory/historyPlanList', METHOD.GET,
+    loginForm)
+}
+// 飞行执行详情 
+export async function getSelectPlanExecuteByPlanId(loginForm:any) { 
+  return request('/api/planExecute/selectPlanExecuteByPlanId', METHOD.GET,
+    loginForm)
+}
+// 历史轨迹 
+export async function getHistoryInfo(loginForm:any) { 
+  return request('/api/fightPathHistory/historyInfo', METHOD.GET,
+    loginForm)
+}
 
 // 新增任务下达
 

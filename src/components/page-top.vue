@@ -20,11 +20,17 @@
         >飞行监视</el-button
       >
     </router-link>
+    <router-link to="/history">
+      <el-button v-show="store.taskId" type="primary" class="btn"
+        >历史记录</el-button
+      >
+    </router-link>
     <router-link to="/aircraft">
       <el-button v-show="store.taskId" type="primary" class="btn"
         >机载终端</el-button
       >
     </router-link>
+    <!--  -->
     <img
       src="http://www.bj-tct.com/web/images/logo.png"
       style="float: right; margin-top: 10px"

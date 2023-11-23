@@ -418,6 +418,7 @@ const drawSubLine = () => {
   if (store.device1Line.length === 0) return;
   drawSubLineLayer = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
   map.add(drawSubLineLayer);
+  map.setCenter(store.device1Line[0]);
   var lines = new AMap.Object3D.Line();
   var lineGeo = lines.geometry;
   let path = JSON.parse(JSON.stringify(store.device1Line));
@@ -492,6 +493,48 @@ const drawSubLine2 = () => {
   drawSubLineLayer2.add(lines);
   drawSubLineLayer2.add(points3D);
 };
+
+var drawSubLineLayerHistory = null;
+const drawSubLineHistory = () => {
+  if (store.historyPointList.length === 0) return;
+  drawSubLineLayerHistory = new AMap.Object3DLayer({ zIndex: 110, opacity: 1 });
+  map.add(drawSubLineLayerHistory);
+  map.setCenter(store.historyPointList[0]);
+
+  var lines = new AMap.Object3D.Line();
+  var lineGeo = lines.geometry;
+  let path = JSON.parse(JSON.stringify(store.historyPointList));
+  var points3D = new AMap.Object3D.RoundPoints();
+  points3D.transparent = true;
+  var pointsGeo = points3D.geometry;
+
+  for (var i = 0; i < path.length; i++) {
+    var height = -store.historyAltitudeList[i] || 0;
+    var center = map.lngLatToGeodeticCoord(path[i]);
+
+    // 连线
+    lineGeo.vertices.push(center.x, center.y, 0);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+    lineGeo.vertices.push(center.x, center.y, height);
+    lineGeo.vertexColors.push(1, 1, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, 0); // 尾部小点
+    pointsGeo.pointSizes.push(6);
+    pointsGeo.vertexColors.push(0, 0, 1, 1);
+
+    pointsGeo.vertices.push(center.x, center.y, height); // 空中点
+    pointsGeo.pointSizes.push(10);
+    pointsGeo.vertexColors.push(0.7, 0, 1, 1);
+    // height -= 1000;
+  }
+
+  points3D.borderColor = [1, 1, 1, 1];
+  points3D.borderWeight = 1;
+
+  drawSubLineLayerHistory.add(lines);
+  drawSubLineLayerHistory.add(points3D);
+};
+
 // 绘制遮挡物
 
 const drawReact = () => {
@@ -616,6 +659,7 @@ const draw3dLine = () => {
       // ],
       height: store.altitudeList,
       height: arr,
+
       color: 'rgba(55,129,240, 0.9)',
       width: 6,
     });
@@ -637,6 +681,7 @@ const draw3dLine2 = () => {
       path: path,
       height: store.altitudeList2,
       color: 'rgba(155,129,240, 0.9)',
+
       width: 6,
     });
 
@@ -646,6 +691,27 @@ const draw3dLine2 = () => {
     map.add(draw3dLineLayer2);
   });
 };
+
+var draw3dLineLayerHistory = null;
+const draw3dLineHistory = () => {
+  if (store.historyPointList.length === 0) return;
+  map.plugin(['Map3D'], function () {
+    draw3dLineLayerHistory = new AMap.Object3DLayer();
+    let path = JSON.parse(JSON.stringify(store.historyPointList));
+    var meshLine = new AMap.Object3D.MeshLine({
+      path: path,
+      height: store.historyAltitudeList,
+      color: 'rgba(100,200,200, 1)',
+      width: 6,
+    });
+
+    meshLine.transparent = true;
+    draw3dLineLayerHistory.add(meshLine);
+    meshLine['backOrFront'] = 'both';
+    map.add(draw3dLineLayerHistory);
+  });
+};
+
 const pointOnCubicBezier = (cp, t) => {
   var ax, bx, cx;
   var ay, by, cy;
@@ -967,6 +1033,27 @@ watch(
       drawCenterPoint(store.centerPoint);
       drawTaskArea(store.area);
       drawAirport();
+    }
+  },
+  {
+    deep: true,
+  }
+);
+
+watch(
+  () => store.historyPointList,
+  (data) => {
+    //  绘制有人机航线
+    if (props.view3D && Map3DPluginInit) {
+      if (draw3dLineLayerHistory) {
+        map.remove(draw3dLineLayerHistory);
+      }
+
+      if (drawSubLineLayerHistory) {
+        map.remove(drawSubLineLayerHistory);
+      }
+      drawSubLineHistory();
+      draw3dLineHistory();
     }
   },
   {

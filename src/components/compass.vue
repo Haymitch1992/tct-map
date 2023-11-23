@@ -2,6 +2,8 @@
   <div class="container">
     <div class="compass-container">
       <div class="compass" :style="{ transform: computedRotate }"></div>
+      <!-- 雷达表盘 -->
+
       <div class="arrow"></div>
       <div class="main-text">
         <span class="height-text">{{ store.altitude }}</span>
@@ -21,6 +23,22 @@
           store.altitude
         }}</span>
       </div>
+      <div class="result-container">
+        <span
+          class="point"
+          v-for="item in arr"
+          :style="{
+            left:
+              item[0] > 0
+                ? 50 + item[0] / 100 + 'px'
+                : item[0] / 100 + 25 + 'px',
+            top:
+              item[1] > 0
+                ? 50 + item[1] / 100 + 'px'
+                : -item[1] / 100 + 25 + 'px',
+          }"
+        ></span>
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +48,11 @@ import { mainStore } from '../store/index';
 import { reactive, computed } from 'vue';
 const store = mainStore();
 
+const arr = [
+  [4000, 4000],
+  // [-2000, 1000],
+];
+
 const computedRotate = computed(() => {
   const result = `rotate(-${store.headingAngle}deg)`;
   return result;
@@ -37,6 +60,47 @@ const computedRotate = computed(() => {
 </script>
 
 <style lang="less" scoped>
+@keyframes scaning {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.result-container {
+  width: 100px;
+  height: 100px;
+  // border-radius: 50%;
+  // background-color: #fff;
+  overflow: hidden;
+  position: absolute;
+  top: 25px;
+  left: 25px;
+
+  .point {
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+  }
+}
+
+.result-container::before {
+  content: '';
+  position: absolute;
+  width: 45px;
+  height: 45px;
+  top: 5px;
+  left: 5px;
+  /*border: 1px solid white;*/
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0) 50%,
+    rgba(0, 192, 0, 1) 100%
+  );
+  border-radius: 100% 0 0 0;
+  animation: scaning 5s linear infinite;
+  transform-origin: 100% 100%;
+}
 .container {
   position: absolute;
   bottom: 20px;

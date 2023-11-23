@@ -10,13 +10,12 @@ export const mainStore = defineStore('main', {
     return {
       device1Pos:[116.118815,39.922553],// 有人机 实时位置
       device1Line: [],// 有人机 航线
-      altitudeList: [],
-      altitudeList2: [],
-      line: {pointList:[[111,222],[111,222]],altitudeList:[0,500]},
-      pointList:[],
       device2Pos:[116.316062, 39.828417], // 无人机 实时位置
       device2Line: [], // 无人机 航线
+      altitudeList: [],
       altitude: 0, // 有人机 高度
+      historyPointList: [],
+      historyAltitudeList:[],
       headingAngle: 0, // 有人机偏转角度
       scene: 2,// 场景1 单个飞机  场景2 有人机和无人机 
       barrierPos: [116.316818358, 39.828504248],// 障碍物坐标

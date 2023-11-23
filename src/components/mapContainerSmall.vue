@@ -218,6 +218,7 @@ const drawFire = () => {
     strokeOpacity: 0.2,
     fillOpacity: 0.4,
     fillColor: '#aa0000',
+
     zIndex: 50,
   });
 
