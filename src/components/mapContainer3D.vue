@@ -468,7 +468,7 @@ const drawSubLine2 = () => {
   var pointsGeo = points3D.geometry;
 
   for (var i = 0; i < path.length; i++) {
-    var height = -store.altitudeList[i] || 0;
+    var height = -store.altitudeList2[i] || 0;
     var center = map.lngLatToGeodeticCoord(path[i]);
 
     // 连线
@@ -652,14 +652,8 @@ const draw3dLine = () => {
     });
     var meshLine = new AMap.Object3D.MeshLine({
       path: path,
-      // path: [
-      //   new AMap.LngLat(115.994165, 39.867676),
-      //   new AMap.LngLat(115.993042, 39.870379),
-      //   new AMap.LngLat(115.980482, 39.903874),
-      // ],
       height: store.altitudeList,
       height: arr,
-
       color: 'rgba(55,129,240, 0.9)',
       width: 6,
     });
@@ -677,11 +671,19 @@ const draw3dLine2 = () => {
   map.plugin(['Map3D'], function () {
     draw3dLineLayer2 = new AMap.Object3DLayer();
     let path = JSON.parse(JSON.stringify(store.device2Line));
+
+    let arr = [];
+    store.altitudeList2.forEach((item, index) => {
+      if (!item) {
+        arr.push(-1);
+      } else {
+        arr.push(item);
+      }
+    });
     var meshLine = new AMap.Object3D.MeshLine({
       path: path,
-      height: store.altitudeList2,
+      height: arr,
       color: 'rgba(155,129,240, 0.9)',
-
       width: 6,
     });
 
@@ -698,9 +700,18 @@ const draw3dLineHistory = () => {
   map.plugin(['Map3D'], function () {
     draw3dLineLayerHistory = new AMap.Object3DLayer();
     let path = JSON.parse(JSON.stringify(store.historyPointList));
+
+    let arr = [];
+    store.historyAltitudeList.forEach((item, index) => {
+      if (!item) {
+        arr.push(-1);
+      } else {
+        arr.push(item);
+      }
+    });
     var meshLine = new AMap.Object3D.MeshLine({
       path: path,
-      height: store.historyAltitudeList,
+      height: arr,
       color: 'rgba(100,200,200, 1)',
       width: 6,
     });
@@ -857,7 +868,7 @@ const draw3dPoint3 = () => {
   var points3D = new AMap.Object3D.RoundPoints();
   points3D.transparent = true;
   var pointsGeo = points3D.geometry;
-  var height = -1000;
+  var height = -store.altitude2 * 1;
   for (var i = 0; i < path.length; i++) {
     var center = map.lngLatToGeodeticCoord(path[i]);
 

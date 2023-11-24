@@ -2,7 +2,7 @@
 import { onMounted, ref, shallowRef, reactive, watch } from 'vue';
 import AMapLoader from '@amap/amap-jsapi-loader';
 import mapItem3 from './map-item-3.vue';
-import airImg1 from '../assets/arrow.png';
+import airImg1 from '../assets/无人机.png';
 import { mainStore } from '../store/index';
 
 const store = mainStore();
@@ -162,6 +162,30 @@ const drawAir = () => {
   map.setCenter([...store.device1Pos]);
 };
 
+const drawAir2 = () => {
+  map.plugin('AMap.Icon', function () {
+    var airIcon = new AMap.Icon({
+      // 图标尺寸
+      size: new AMap.Size(48, 48),
+      // 图标的取图地址
+      image: airImg1,
+
+      anchor: 'center',
+      // 图标所用图片大小
+      imageSize: new AMap.Size(48, 48),
+
+      // 图标取图偏移量
+    });
+    var airMarker = new AMap.Marker({
+      position: new AMap.LngLat(...store.device2Pos),
+      icon: airIcon,
+      offset: new AMap.Pixel(-24, -24),
+    });
+    saveAir = airMarker;
+    map.add([airMarker]);
+  });
+  let num = parseFloat(store.device1Pos[1]) + 0.0036;
+};
 // 结束编辑
 
 const closeEdit = () => {
@@ -287,12 +311,23 @@ watch(
 watch(
   () => store.device1Pos,
   (a) => {
-    if (saveAir) {
-      map.remove(saveAir);
-    }
     changeRotation(-store.headingAngle);
     drawAir();
     drawLine();
+  },
+  {
+    deep: true,
+  }
+);
+
+watch(
+  () => store.device2Pos,
+  (a) => {
+    if (saveAir) {
+      map.remove(saveAir);
+    }
+
+    drawAir2();
   },
   {
     deep: true,

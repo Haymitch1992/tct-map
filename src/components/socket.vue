@@ -33,7 +33,7 @@ export default {
   name: 'Websocket',
   data() {
     return {
-      wsuri: 'wss://172.51.216.125:12125/websocket',
+      wsuri: 'wss://172.51.216.125:12126/websocket',
       lockReconnect: false, // 连接失败不进行重连
       maxReconnect: 5, // 最大重连次数，若连接失败
       socket: null,
@@ -51,7 +51,7 @@ export default {
       setTimeout(() => {
         // this.maxReconnect-- // 不做限制 连不上一直重连
         this.initWebSocket();
-      }, 60 * 1000);
+      }, 600 * 1000);
     },
     initWebSocket() {
       try {
@@ -98,9 +98,11 @@ export default {
 
             // let saveObj = JSON.parse(obj.data.flightTrack);
             store.headingAngle = saveObj.headingAngle;
+            store.dronePosition = obj.data.dronePosition;
             break;
           case '无人机':
             store.device2Pos = [obj.data.longitude * 1, obj.data.latitude * 1];
+            store.altitude2 = obj.data.altitude;
             break;
         }
       }

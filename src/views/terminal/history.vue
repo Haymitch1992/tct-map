@@ -39,7 +39,7 @@
       <h3>执行详情</h3>
       <el-table :data="pageData.executeList" border style="width: 100%">
         <el-table-column prop="deviceKey" label="飞行器类型" />
-        <el-table-column prop="planCreateTime" label="创建时间" />
+        <el-table-column prop="createTime" label="创建时间" />
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button

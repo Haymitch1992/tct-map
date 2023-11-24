@@ -23,19 +23,13 @@
           store.altitude
         }}</span>
       </div>
-      <div class="result-container">
+      <div class="result-container" :style="{ transform: computedRotate }">
         <span
           class="point"
-          v-for="item in arr"
+          v-for="item in store.dronePosition"
           :style="{
-            left:
-              item[0] > 0
-                ? 50 + item[0] / 100 + 'px'
-                : item[0] / 100 + 25 + 'px',
-            top:
-              item[1] > 0
-                ? 50 + item[1] / 100 + 'px'
-                : -item[1] / 100 + 25 + 'px',
+            left: (5000 + item[0]) / 100 + 'px',
+            top: (5000 - item[1]) / 100 + 'px',
           }"
         ></span>
       </div>
@@ -48,10 +42,31 @@ import { mainStore } from '../store/index';
 import { reactive, computed } from 'vue';
 const store = mainStore();
 
-const arr = [
-  [4000, 4000],
-  // [-2000, 1000],
-];
+// const arr = [
+//   [-4000, 4000],
+// ];
+
+// const computedPos = computed((item) => {
+//   let top = 0;
+//   let left = 0;
+//   //  item0 x
+//   // item1 y
+//   if (item[0] > 0 && item[1] > 0) {
+//     top = 5000 - item[1];
+//     left = 5000 + item[0];
+//   } else if (item[0] < 0 && item[1] > 0) {
+//     top = 5000 - item[1];
+//     left = 5000 + item[0];
+//   } else if (item[0] < 0 && item[1] < 0) {
+//     top = 5000 - item[1];
+//     left = 5000 + item[0];
+//   } else if (item[0] > 0 && item[1] < 0) {
+//     top = 5000 - item[1];
+//     left = 5000 + item[0];
+//   }
+
+//   return result;
+// });
 
 const computedRotate = computed(() => {
   const result = `rotate(-${store.headingAngle}deg)`;
@@ -68,7 +83,7 @@ const computedRotate = computed(() => {
 .result-container {
   width: 100px;
   height: 100px;
-  // border-radius: 50%;
+  border-radius: 50%;
   // background-color: #fff;
   overflow: hidden;
   position: absolute;
@@ -78,7 +93,7 @@ const computedRotate = computed(() => {
   .point {
     width: 10px;
     height: 10px;
-    background-color: #fff;
+    background-color: #e41f29;
     border-radius: 50%;
     position: absolute;
   }

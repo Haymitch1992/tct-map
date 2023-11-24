@@ -32,7 +32,7 @@
     </router-link>
     <!--  -->
     <img
-      src="http://www.bj-tct.com/web/images/logo.png"
+      src="https://www.bj-tct.com/web/images/logo.png"
       style="float: right; margin-top: 10px"
     />
   </div>

@@ -74,7 +74,16 @@
         </el-table>
       </div>
       <div v-if="pageData.stataus === 2">
-        <h3>创建计划</h3>
+        <h3>
+          创建计划
+          <el-button
+            size="small"
+            type="primary"
+            @click="backList"
+            class="create-btn"
+            >计划列表</el-button
+          >
+        </h3>
         <el-form
           label-position="top"
           label-width="100px"
@@ -219,6 +228,10 @@ const transferStatus = (num) => {
       return '未知';
     // 0:未执行、1:已下发，待放飞、2:执行中、3:已执行完毕
   }
+};
+
+const backList = () => {
+  pageData.stataus = 1;
 };
 
 const handleCreateTask = () => {
@@ -377,7 +390,7 @@ const getInfo = () => {
   });
 
   getSelectListPlanExecute({
-    pageSize: 20,
+    pageSize: 10,
     pageNum: 1,
   }).then((res) => {
     pageData.planList = res.data.data.list;
@@ -391,6 +404,9 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+.create-btn {
+  float: right;
+}
 .page-container {
   position: relative;
   background-color: #101010;
