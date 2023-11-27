@@ -46,7 +46,6 @@ const obj = {
 <template>
   <div class="page-container">
     <div class="top-container">
-      {{ store.dronePosition }}
       <el-tag size="small" type="success" v-if="store.device1Pos"
         >经度{{ store.device1Pos[0] }}°</el-tag
       >
