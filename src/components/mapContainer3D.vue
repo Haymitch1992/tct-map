@@ -304,7 +304,7 @@ const drawFire = () => {
     // 图标类型，现阶段只支持 image 类型
     type: 'image',
     // 图片 url
-    image: '/火苗.png',
+    image: '/fire.gif',
     // 图片尺寸
     size: [48, 48],
     // 图片相对 position 的锚点，默认为 bottom-center
@@ -770,61 +770,6 @@ const getEllipseHeight = (count, maxHeight, minHeight) => {
   return height;
 };
 
-// 绘制三维点
-const draw3dPoint = () => {
-  var object3Dlayer = new AMap.Object3DLayer({
-    zIndex: 110,
-    opacity: 1,
-  });
-
-  map.add(object3Dlayer);
-
-  function lnglatToG20(lnglat) {
-    lnglat = map.lngLatToGeodeticCoord(lnglat);
-    lnglat.x = AMap.Util.format(lnglat.x, 3);
-    lnglat.y = AMap.Util.format(lnglat.y, 3);
-    return lnglat;
-  }
-
-  var coords = [store.device1Pos];
-
-  // 纹理图片的长宽尺寸要求为：2的N次方个像素。
-  // 因此这里的图片尺寸为 256px * 256px，也可以是1024*256等尺寸。
-  var imgs = [
-    // 'https://a.amap.com/jsapi_demos/static/demo-center/3d_texture_tiananmen_256.png',
-    // 'http://localhost:5173/public/send.png',
-    // '/test/images/2023/10/25/oTrT0Y.png',
-    '/test/images/2023/10/25/oTrWj9.png',
-  ];
-
-  var points3D = new AMap.Object3D.Points();
-  points3D.transparent = true;
-  var geometry = points3D.geometry;
-  for (var i = 0, len = imgs.length; i < len; i++) {
-    var img = imgs[i];
-    // 设置纹理贴图，数组中可以放入图片 url 和 canvas 对象，图片要符合宽高为 2的N次方 * 2的N次方个像素。
-    // 纹理个数最多为8个，如果超出8个需要自行使用 CSS sprites 技术整合图片，并通过 vertexUVs 定位图片位置。
-    console.log(img);
-    points3D.textures.push(img);
-  }
-
-  for (var p = 0; p < coords.length; p += 1) {
-    var center = lnglatToG20(coords[p]);
-
-    geometry.vertices.push(center.x, center.y, -1000);
-    geometry.vertices.push(center.x, center.y, 0);
-    geometry.pointSizes.push(80);
-    geometry.vertexColors.push(p * 0.029, p * 0.015, p * 0.01, 0.5);
-    geometry.pointAreas.push(0, 0, 1, 1);
-    // 每两个元素描述一个顶点的纹理坐标信息，纹理坐标以图片左上角为原点。分别是左上角和右下角。
-    geometry.vertexUVs.push(0, 0, 1, 1);
-    // 每个元素描述一个顶点的纹理索引信息，多纹理时使用，取值范围[0-7]。单纹理或者无纹理时不需要设值。
-    geometry.textureIndices.push(p);
-  }
-
-  object3Dlayer.add(points3D);
-};
-
 const draw3dPoint2 = () => {
   if (!store.device1Pos) return;
 
@@ -857,9 +802,82 @@ const draw3dPoint2 = () => {
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
 
+  // 清除图层上的内容
+  airPointLayer2.clear();
+
   airPointLayer2.add(lines);
   airPointLayer2.add(points3D);
+  // 绘制文字
+  drawText();
 };
+
+//
+var textDom = null;
+const drawText = () => {
+  if (textDom) {
+    map.remove(textDom);
+  }
+  let dom = `
+  设备：有人机 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;高度：${store.altitude}米<br>
+  经度：${store.device1Pos[0]}°&nbsp;&nbsp; 
+  纬度：${store.device1Pos[1]}°<br>
+
+  `;
+  textDom = new AMap.Text({
+    text: dom,
+    anchor: 'top-center', // 设置文本标记锚点
+    draggable: true,
+    // offset: [10, 0],
+    cursor: 'pointer',
+    style: {
+      padding: '12px',
+      'margin-bottom': '-2rem',
+      'border-radius': '.25rem',
+      'background-color': 'rgba(0,0,0,.6)',
+      'border-width': 0,
+      'text-align': 'center',
+      'font-size': '12px',
+      'text-align': 'left',
+      color: '#fff',
+    },
+    position: store.device1Pos,
+  });
+  textDom.setMap(map);
+};
+
+var textDom2 = null;
+const drawText2 = () => {
+  if (textDom2) {
+    map.remove(textDom2);
+  }
+  let dom = `
+  设备：无人机 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;高度：${store.altitude2}米<br>
+  经度：${store.device2Pos[0]}°&nbsp;&nbsp; 
+  纬度：${store.device2Pos[1]}°<br>
+
+  `;
+  textDom2 = new AMap.Text({
+    text: dom,
+    anchor: 'top-center', // 设置文本标记锚点
+    draggable: true,
+    // offset: [10, 0],
+    cursor: 'pointer',
+    style: {
+      padding: '12px',
+      'margin-bottom': '-2rem',
+      'border-radius': '.25rem',
+      'background-color': 'rgba(0,0,0,.6)',
+      'border-width': 0,
+      'text-align': 'center',
+      'font-size': '12px',
+      'text-align': 'left',
+      color: '#fff',
+    },
+    position: store.device2Pos,
+  });
+  textDom2.setMap(map);
+};
+
 const draw3dPoint3 = () => {
   if (!store.device2Pos) return;
   var lines = new AMap.Object3D.Line();
@@ -890,9 +908,10 @@ const draw3dPoint3 = () => {
 
   points3D.borderColor = [0.4, 0.8, 1, 1];
   points3D.borderWeight = 1;
-
+  airPointLayer.clear();
   airPointLayer.add(lines);
   airPointLayer.add(points3D);
+  drawText2();
 };
 // 结束编辑
 

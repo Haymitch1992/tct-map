@@ -18,10 +18,10 @@ const getVideo = () => {
   videoPlayer = new Player({
     id: 'mse',
     isLive: true,
-    width: 380,
+    width: 360,
     autoplay: true,
     plugins: [FlvPlugin],
-    url: 'http://111.202.159.100:50008/live/',
+    url: 'https://172.51.215.158:30082/live/34020000001320000026@34020000001320000001.flv',
     flv: {
       retryCount: 3, // 重试 3 次，默认值
       retryDelay: 1000, // 每次重试间隔 1 秒，默认值
@@ -32,7 +32,7 @@ const getVideo = () => {
       },
     },
     meta: {
-      width: 400,
+      width: 360,
     },
   });
 };
@@ -45,10 +45,10 @@ onMounted(() => {
 .video-container {
   box-sizing: border-box;
   position: relative;
-  width: 400px;
+  width: 360px;
 }
 
 #mse {
-  width: 400px;
+  width: 360px;
 }
 </style>

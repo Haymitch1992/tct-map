@@ -12,6 +12,27 @@
     <div class="right-container">
       <h3>飞行监视</h3>
 
+      <div class="item">
+        <h4>火灾情况</h4>
+        <p>火头面积约：400㎡</p>
+        <p>火翼面积约：1500㎡</p>
+        <p>火尾面积约：200㎡</p>
+        <el-button size="small" type="primary" @click="showWarning()"
+          >标记火情</el-button
+        >
+        <el-button size="small" type="warning" @click="hideWarning()"
+          >取消标记</el-button
+        >
+      </div>
+      <div class="item">
+        <h4>救灾情况</h4>
+        <p>无人机：侦查中</p>
+        <p>直升机：前往火灾区，距离火灾区15KM</p>
+      </div>
+      <div class="item">
+        <h4>飞行器感知画面</h4>
+        <video-box></video-box>
+      </div>
       <!-- <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
       <el-button type="primary" @click="test()">保存航线</el-button> -->
 
@@ -19,9 +40,8 @@
       <span class="data-text">
         {{ store.device1Line }}
       </span> -->
-      <el-button @click="showWarning()">注入火灾</el-button>
-      <el-button @click="hideWarning()">取消</el-button>
-      <h4>飞行器实时数据</h4>
+
+      <!-- <h4>飞行器实时数据</h4>
       <el-tag size="small" type="success" v-if="store.device1Pos"
         >经度 {{ store.device1Pos[0] }}°</el-tag
       >
@@ -45,9 +65,7 @@
       <h4>无人机航线 紫色航线</h4>
       <span class="data-text">
         {{ store.device2Line }}
-      </span>
-      <h4>飞行器感知画面</h4>
-      <!-- <video-box></video-box> -->
+      </span> -->
     </div>
     <socket></socket>
   </div>
@@ -174,6 +192,22 @@ onUnmounted(() => {});
 </script>
 
 <style lang="less" scoped>
+.item {
+  background-color: #3a3a3c;
+  padding: 10px;
+  font-size: 14px;
+  margin: 10px 0;
+  h4 {
+    padding: 0;
+    margin: 0;
+    line-height: 36px;
+  }
+  p {
+    padding: 0;
+    margin: 0;
+    line-height: 30px;
+  }
+}
 .page-container {
   position: relative;
   background-color: #101010;

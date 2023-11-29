@@ -8,7 +8,7 @@ export const mainStore = defineStore('main', {
   state: () => { 
     // 定义状态
     return {
-      device1Pos:[116.118815,39.922553],// 有人机 实时位置
+      device1Pos:[ 115.999797, 39.844355],// 有人机 实时位置
       device1Line: [],// 有人机 航线
       device2Pos:[116.316062, 39.828417], // 无人机 实时位置
       device2Line: [], // 无人机 航线
@@ -46,7 +46,7 @@ export const mainStore = defineStore('main', {
         // },
       
       ],
-      // 帮我写一个变量 用来存放无人机的位置
+    
       taskId: 8,
       // 无人机场站
       taskName:'测试创建',

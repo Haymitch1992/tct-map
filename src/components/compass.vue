@@ -39,34 +39,10 @@
 
 <script lang="ts" setup>
 import { mainStore } from '../store/index';
-import { reactive, computed } from 'vue';
+import {  computed } from 'vue';
 const store = mainStore();
 
-// const arr = [
-//   [-4000, 4000],
-// ];
 
-// const computedPos = computed((item) => {
-//   let top = 0;
-//   let left = 0;
-//   //  item0 x
-//   // item1 y
-//   if (item[0] > 0 && item[1] > 0) {
-//     top = 5000 - item[1];
-//     left = 5000 + item[0];
-//   } else if (item[0] < 0 && item[1] > 0) {
-//     top = 5000 - item[1];
-//     left = 5000 + item[0];
-//   } else if (item[0] < 0 && item[1] < 0) {
-//     top = 5000 - item[1];
-//     left = 5000 + item[0];
-//   } else if (item[0] > 0 && item[1] < 0) {
-//     top = 5000 - item[1];
-//     left = 5000 + item[0];
-//   }
-
-//   return result;
-// });
 
 const computedRotate = computed(() => {
   const result = `rotate(-${store.headingAngle}deg)`;
