@@ -132,6 +132,18 @@ const initMap = () => {
             store.centerPoint = [event.obj.getPosition()];
             mouseTool.close(true);
           }
+
+          if (event.obj.CLASS_NAME == 'AMap.Polyline') {
+            ElMessage({
+              message: '航线设置成功',
+              type: 'success',
+            });
+            console.log(event.obj.getPath());
+
+            store.device1Line = returnLinePath(event.obj.getPath());
+            drawLine();
+            mouseTool.close(true);
+          }
         });
       }
       //
@@ -147,39 +159,32 @@ const initMap = () => {
 
       if (props.view3D) {
         // 显示三维视图
-        // if (props.showAir) {
-        //   draw3dPoint2();
-        //   draw3dPoint3();
-        // }
-        // if (props.showLine2) {
-        //   draw3dLine2();
-        //   drawSubLine2();
-        // }
-        // // 创建楼快
-        // draw3dLine();
-        // drawSubLine();
       } else {
         drawLine();
       }
-      // drawTaskArea(store.area);
-      // drawCenterPoint(store.centerPoint);
+
       drawReact();
       drawAirport();
       // 是否存在 任务区域
       if (store.area.length > 0) {
         drawTaskArea(store.area);
       }
+      // drawFire();
     })
     .catch((e) => {
       console.log(e);
     });
 };
 
+var polyline1Obj = null;
 const drawLine = () => {
+  if (polyline1Obj) {
+    map.remove(polyline1Obj);
+  }
   console.log('绘制线', props.view3D);
   let path = JSON.parse(JSON.stringify(store.device1Line));
   //
-  var polyline1 = new AMap.Polyline({
+  polyline1Obj = new AMap.Polyline({
     path: path,
     strokeWeight: 6,
     strokeOpacity: 0.9,
@@ -192,7 +197,7 @@ const drawLine = () => {
     strokeWeight: 10,
   });
 
-  polyEditor = new AMap.PolyEditor(map, polyline1);
+  polyEditor = new AMap.PolyEditor(map, polyline1Obj);
 
   // polyEditor.setTarget(polyline1);
   polyEditor.on('adjust', function (event) {
@@ -204,7 +209,7 @@ const drawLine = () => {
     calcLine(path);
   });
   // polyEditor.open();
-  map.add([polyline1]);
+  map.add([polyline1Obj]);
   map.setFitView();
 };
 
@@ -228,8 +233,8 @@ const drawTaskArea = (arr) => {
       path: returnLinePath(item),
       strokeColor: '#FF33FF',
       strokeWeight: 6,
-      strokeOpacity: 0.2,
-      fillOpacity: 0.4,
+      strokeOpacity: 0.1,
+      fillOpacity: 0.2,
       fillColor: '#1791fc',
       zIndex: 50,
     });
@@ -274,7 +279,7 @@ const drawAirport = () => {
 
     var circle = new AMap.Circle({
       center: new AMap.LngLat(...pos), // 圆心位置,
-      radius: 2500, //半径
+      radius: 500, //半径
       strokeColor: '#026', //线颜色
       strokeOpacity: 1, //线透明度
       strokeWeight: 3, //线粗细度
@@ -383,6 +388,25 @@ const drawMark = () => {
   //   strokeWeight: 6,
   //   strokeOpacity: 0.2,
   // });
+};
+
+const drawAirLine = () => {
+  store.device1Line = [];
+  if (polyline1Obj) {
+    map.remove(polyline1Obj);
+  }
+  mouseTool.polyline({
+    strokeColor: '#FF33FF',
+    strokeOpacity: 1,
+    strokeWeight: 6,
+    strokeOpacity: 1,
+    fillColor: '#1791fc',
+    fillOpacity: 1,
+    // 线样式还支持 'dashed'
+    strokeStyle: 'solid',
+    // strokeStyle是dashed时有效
+    strokeDasharray: [30, 10],
+  });
 };
 
 const returnLinePath = (data) => {
@@ -930,7 +954,7 @@ onMounted(() => {
 onUnmounted(() => {
   // 销毁地图
   console.log('销毁地图');
-  map.destroy();
+  // map.destroy();
 });
 const count = ref(0);
 
@@ -962,6 +986,7 @@ defineExpose({
   setFitViewFn,
   drawPolygon,
   drawMark,
+  drawAirLine,
 });
 
 watch(

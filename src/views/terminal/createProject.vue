@@ -23,18 +23,17 @@
         </h3>
 
         <el-table border :data="pageData.projectList" style="width: 100%">
-          <el-table-column width="100" prop="taskName" label="任务">
+          <el-table-column prop="taskName" label="任务">
             <!-- handelSelectTask -->
             <template #default="scope">
               <span>{{ scope.row.taskName }}</span>
             </template>
           </el-table-column>
           <el-table-column
-            width="100"
             prop="taskCreateTime"
             label="创建时间"
           />"
-          <el-table-column prop="taskName" label="操作">
+          <el-table-column prop="taskName" label="操作" width="140">
             <!-- handelSelectTask -->
             <template #default="scope">
               <el-button
@@ -140,6 +139,7 @@
               v-model="formLabelAlign.remark"
             />
           </el-form-item>
+          
           <el-form-item label="任务成员">
             <el-table :data="pageData.member" border style="width: 100%">
               <el-table-column prop="name" label="成员名称" />
@@ -255,7 +255,7 @@ const getTask = () => {
 };
 
 const handelSelectTask = (item) => {
-  console.log(item);
+  // console.log(item);
   formLabelAlign.taskName = item.taskName;
   formLabelAlign.eventTime = item.eventTime;
   formLabelAlign.locations = item.locations;

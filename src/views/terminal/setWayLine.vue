@@ -24,11 +24,6 @@
           >
         </h3>
         <el-table :data="pageData.planList" border style="width: 100%">
-          <!-- <el-table-column
-            prop="executeTime"
-            label="计划/实际时间"
-            width="100"
-          /> -->
           <el-table-column
             prop="executeTime"
             label="计划/实际时间"
@@ -72,6 +67,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="pagination-line">
+          <el-pagination
+            v-model:current-page="pageData.pageNum"
+            :page-size="pageData.pageSize"
+            :small="true"
+            :background="true"
+            layout="total, prev, pager, next"
+            :total="pageData.total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
       </div>
       <div v-if="pageData.stataus === 2">
         <h3>
@@ -234,6 +241,17 @@ const backList = () => {
   pageData.stataus = 1;
 };
 
+const handleSizeChange = (val) => {
+  console.log(`${val} items per page`);
+  pageData.pageSize = val;
+  getInfo();
+};
+
+const handleCurrentChange = (val) => {
+  console.log(`current page: ${val}`);
+  pageData.pageNume = val;
+  getInfo();
+};
 const handleCreateTask = () => {
   pageData.stataus = 2;
 };
@@ -250,6 +268,9 @@ const formLabelAlign = reactive({
 });
 const pageData = reactive({
   lineList: [],
+  pageSize: 5,
+  pageNum: 1,
+  total: 0,
   planName: null,
   planId: null,
   stataus: 1,
@@ -390,10 +411,11 @@ const getInfo = () => {
   });
 
   getSelectListPlanExecute({
-    pageSize: 10,
-    pageNum: 1,
+    pageSize: pageData.pageSize,
+    pageNum: pageData.pageNum,
   }).then((res) => {
     pageData.planList = res.data.data.list;
+    pageData.total = res.data.data.total;
   });
 };
 
@@ -446,5 +468,8 @@ onMounted(() => {
 }
 .back-btn {
   float: right;
+}
+.pagination-line {
+  padding: 10px 4px;
 }
 </style>

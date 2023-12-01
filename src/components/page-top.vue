@@ -31,10 +31,7 @@
       >
     </router-link>
     <!--  -->
-    <img
-      src="https://www.bj-tct.com/web/images/logo.png"
-      style="float: right; margin-top: 10px"
-    />
+    <img src="../assets/logo.png" style="float: right; margin-top: 10px" />
   </div>
 </template>
 

@@ -3,6 +3,7 @@
 </template>
 <script>
 import { mainStore } from '../store/index';
+import { ElMessage } from 'element-plus';
 const store = mainStore();
 const heartCheck = {
   timeout: 60 * 1000,
@@ -74,7 +75,7 @@ export default {
       // this.socket.send('发送数据')
       setTimeout(() => {
         this.websocketsend();
-      }, 5000);
+      }, 1000);
     },
     websocketonerror(e) {
       console.log('WebSocket连接发生错误', e);
@@ -99,10 +100,25 @@ export default {
             // let saveObj = JSON.parse(obj.data.flightTrack);
             store.headingAngle = saveObj.headingAngle;
             store.dronePosition = obj.data.dronePosition;
+
             break;
           case '无人机':
             store.device2Pos = [obj.data.longitude * 1, obj.data.latitude * 1];
             store.altitude2 = obj.data.altitude;
+
+            if (obj.data.warningType === '1002') {
+              ElMessage({
+                message: obj.data.warningInfo,
+                grouping: true,
+                type: 'warning',
+              });
+            } else if (obj.data.warningType === '1003') {
+              ElMessage({
+                message: obj.data.warningInfo,
+                grouping: true,
+                type: 'warning',
+              });
+            }
             break;
         }
       }

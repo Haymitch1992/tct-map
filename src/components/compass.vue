@@ -39,13 +39,11 @@
 
 <script lang="ts" setup>
 import { mainStore } from '../store/index';
-import {  computed } from 'vue';
+import { computed } from 'vue';
 const store = mainStore();
 
-
-
 const computedRotate = computed(() => {
-  const result = `rotate(-${store.headingAngle}deg)`;
+  const result = `rotate(${-parseFloat(store.headingAngle)}deg)`;
   return result;
 });
 </script>

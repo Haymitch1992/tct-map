@@ -97,14 +97,15 @@
         <h4>航线数据</h4>
         <!-- 显示航线 -->
         <line-item></line-item>
-        <el-button type="primary" @click="startSetLine()">编辑</el-button>
-        <el-button type="primary" @click="closeSetLine()">结束编辑</el-button>
+        <el-button type="primary" @click="StartDrawAirLine()">开始</el-button>
+        <el-button type="primary" @click="startSetLine()">调整</el-button>
+        <el-button type="primary" @click="closeSetLine()">取消</el-button>
 
         <el-button type="primary" v-if="pageData.planId" @click="editLine()"
           >更新</el-button
         >
         <el-button type="primary" v-if="!pageData.planId" @click="addLine()"
-          >新建</el-button
+          >保存</el-button
         >
       </div>
     </div>
@@ -198,12 +199,13 @@ const createLine = () => {
   pageData.planId = null;
   pageData.planName = '新建航线';
   pageData.status = 2;
-  store.device1Line = [
-    [115.999797, 39.844355],
-    [116.030208, 39.911192],
-    [116.057195, 39.848882],
-    [116.121909, 39.92846],
-  ];
+  store.device1Line = [];
+  // store.device1Line = [
+  //   [115.999797, 39.844355],
+  //   [116.030208, 39.911192],
+  //   [116.057195, 39.848882],
+  //   [116.121909, 39.92846],
+  // ];
   FavoriteRef.value.initMapFn();
   // FavoriteRef.value.initMapFn();
 };
@@ -292,6 +294,10 @@ const getInfo = () => {
   });
 };
 
+const StartDrawAirLine = () => {
+  FavoriteRef.value.drawAirLine();
+};
+
 onMounted(() => {
   getInfo();
   // 绘制
@@ -352,7 +358,7 @@ onMounted(() => {
   padding: 10px 4px;
 }
 .device-line {
-  // padding-bottom: 10px;
+  padding-bottom: 10px;
 }
 .line-data {
   font-size: 12px;

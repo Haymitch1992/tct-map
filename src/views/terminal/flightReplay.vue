@@ -33,39 +33,6 @@
         <h4>飞行器感知画面</h4>
         <video-box></video-box>
       </div>
-      <!-- <el-button type="primary" @click="startSetLine()">编辑航线</el-button>
-      <el-button type="primary" @click="test()">保存航线</el-button> -->
-
-      <!-- <h4>航线信息</h4>
-      <span class="data-text">
-        {{ store.device1Line }}
-      </span> -->
-
-      <!-- <h4>飞行器实时数据</h4>
-      <el-tag size="small" type="success" v-if="store.device1Pos"
-        >经度 {{ store.device1Pos[0] }}°</el-tag
-      >
-      <el-tag size="small" type="success" v-if="store.device1Pos"
-        >纬度 {{ store.device1Pos[1] }}°</el-tag
-      >
-      <el-tag size="small" type="success">海拔 {{ store.altitude }}m</el-tag>
-      <h4>有人机坐标</h4>
-      <span class="data-text">
-        {{ store.device1Pos }}
-      </span>
-      <h4>无人机坐标</h4>
-      <span class="data-text">
-        {{ store.device2Pos }}
-      </span>
-
-      <h4>有人机航线 蓝色航线</h4>
-      <span class="data-text">
-        {{ store.device1Line }}
-      </span>
-      <h4>无人机航线 紫色航线</h4>
-      <span class="data-text">
-        {{ store.device2Line }}
-      </span> -->
     </div>
     <socket></socket>
   </div>
@@ -92,10 +59,7 @@ const store = mainStore();
 
 const showWarning = () => {
   let str = JSON.stringify({
-    markerList: [
-      [115.986918, 39.884053],
-      [115.979593, 39.875295],
-    ],
+    markerList: [[115.985895, 39.879805]],
     fireArea: [
       {
         Q: 39.88405250992457,
@@ -130,6 +94,7 @@ const showWarning = () => {
     ],
   });
   store.saveTaskObj.fireRange = str;
+  store.saveTaskObj.taskArea = str;
   postEditTaskInfo({
     ...store.saveTaskObj,
   }).then((res) => {});
